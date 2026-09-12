@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS Kedai Minuman - Pro</title>
+    <title>POS Kedai Minuman - Professional</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -13,9 +13,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        body { font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         @media print {
             body * { visibility: hidden; }
             #receipt, #receipt * { visibility: visible; }
@@ -26,17 +26,17 @@
 </head>
 <body class="bg-gray-100 h-screen flex flex-col md:flex-row overflow-hidden select-none">
 
-    <!-- ================= SIDEBAR ================= -->
-    <aside class="w-full md:w-64 bg-slate-900 text-white flex md:flex-col justify-between shadow-xl z-20">
-        <div class="p-4 md:p-5 font-bold text-lg md:text-xl border-b border-slate-700 flex items-center">
+    <!-- ================= SIDEBAR / HEADER NAV ================= -->
+    <aside class="w-full md:w-64 bg-slate-900 text-white flex md:flex-col justify-between shadow-xl z-20 shrink-0">
+        <div class="p-3 md:p-5 font-bold text-base md:text-xl border-b border-slate-700 flex items-center">
             <i class="fa-solid fa-mug-hot text-blue-500 mr-2 md:mr-3"></i> DRINK POS
         </div>
-        <nav class="flex md:flex-col py-2 md:py-4 space-x-2 md:space-x-0 md:space-y-1 px-2 md:px-0 flex-1 overflow-x-auto">
+        <nav class="flex md:flex-col py-2 md:py-4 space-x-1 md:space-x-0 md:space-y-1 px-2 md:px-0 flex-1 overflow-x-auto">
             <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full text-left px-3 md:px-5 py-2 md:py-3 bg-slate-800 border-l-4 border-blue-500 hover:bg-slate-700 transition text-xs md:text-sm whitespace-nowrap">
                 <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
             </button>
             <button onclick="switchView('kasir')" id="nav-kasir" class="w-full text-left px-3 md:px-5 py-2 md:py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition text-xs md:text-sm whitespace-nowrap">
-                <i class="fa-solid fa-cash-register w-6"></i> Kasir
+                <i class="fa-solid fa-cash-register w-6"></i> Kasir / POS
             </button>
             <button onclick="switchView('admin')" id="nav-admin" class="w-full text-left px-3 md:px-5 py-2 md:py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition text-xs md:text-sm whitespace-nowrap">
                 <i class="fa-solid fa-box w-6"></i> Data Produk
@@ -51,8 +51,6 @@
                 <h2 class="text-xl md:text-2xl font-bold text-gray-800">Statistik Penjualan</h2>
                 <p class="text-xs md:text-sm text-gray-500 font-medium" id="dash-date">Memuat tanggal...</p>
             </div>
-            
-            <!-- FILTER KALENDAR -->
             <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-xl shadow-sm border w-full md:w-auto">
                 <span class="text-xs md:text-sm font-bold text-gray-600 pl-2"><i class="fa-solid fa-calendar-day text-blue-500 mr-1"></i> Tanggal:</span>
                 <input type="date" id="filter-date" onchange="renderDashboard()" class="border border-gray-300 rounded-lg p-1.5 md:p-2 text-xs md:text-sm focus:border-blue-500 outline-none font-bold text-gray-700 cursor-pointer">
@@ -62,7 +60,6 @@
             </div>
         </div>
 
-        <!-- Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
             <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border-l-4 border-blue-500 flex justify-between items-center">
                 <div>
@@ -94,7 +91,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-10">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
             <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border lg:col-span-2">
                 <h3 class="font-bold text-gray-800 mb-4 text-sm md:text-base">Grafik 7 Hari Terakhir</h3>
                 <canvas id="salesChart" height="120"></canvas>
@@ -104,39 +101,44 @@
                     <h3 class="font-bold text-gray-800 text-sm md:text-base">Riwayat Transaksi</h3>
                     <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold" id="count-trx-badge">0 TRX</span>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-1 pr-1" id="recent-trx-list">
-                    <!-- Dimuat JS -->
-                </div>
+                <div class="flex-1 overflow-y-auto space-y-1 pr-1" id="recent-trx-list"></div>
             </div>
         </div>
     </main>
 
-    <!-- ================= VIEW KASIR (PERBAIKAN TATA LETAK & TOMBOL) ================= -->
-    <main id="view-kasir" class="flex-1 flex flex-col md:flex-row h-full hide transition-all overflow-hidden">
-        <!-- Grid Produk -->
-        <div class="flex-1 overflow-y-auto p-3 md:p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 bg-gray-50 content-start">
-            <div id="product-grid" class="contents">
-                <!-- Dimuat oleh JS -->
-            </div>
+    <!-- ================= VIEW KASIR / POS ================= -->
+    <main id="view-kasir" class="flex-1 flex flex-col md:flex-row h-full hide transition-all overflow-hidden relative">
+        
+        <!-- Tab Tombol Khusus Layar HP (Pilih Menu vs Keranjang) -->
+        <div class="md:hidden flex bg-slate-800 text-white shrink-0 p-1">
+            <button onclick="switchMobileTab('menu')" id="mob-btn-menu" class="flex-1 py-2 text-center text-xs font-bold bg-blue-600 rounded text-white shadow">Pilih Menu</button>
+            <button onclick="switchMobileTab('cart')" id="mob-btn-cart" class="flex-1 py-2 text-center text-xs font-bold text-gray-300 rounded">Keranjang (<span id="mob-cart-count">0</span>)</button>
         </div>
 
-        <!-- Keranjang (Fixed layout agar tombol bayar selalu terlihat di bawah) -->
-        <div class="w-full md:w-96 bg-white shadow-xl flex flex-col z-10 border-l h-[50vh] md:h-full">
+        <!-- Kolom Produk / Menu -->
+        <div id="mobile-section-menu" class="flex-1 overflow-y-auto p-3 md:p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 bg-gray-50 content-start">
+            <div id="product-grid" class="contents"></div>
+        </div>
+
+        <!-- Kolom Keranjang & Tombol Bayar Permanen -->
+        <div id="mobile-section-cart" class="w-full md:w-96 bg-white shadow-2xl flex flex-col z-10 border-l h-full hidden md:flex shrink-0">
             <div class="p-3 md:p-4 bg-slate-900 text-white font-bold flex justify-between items-center shrink-0">
-                <span class="text-sm md:text-base"><i class="fa-solid fa-basket-shopping"></i> Keranjang</span>
-                <button onclick="clearCart()" class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition font-medium">Kosongkan</button>
+                <span class="text-sm md:text-base"><i class="fa-solid fa-basket-shopping"></i> Keranjang Belanja</span>
+                <button onclick="clearCart()" class="text-xs bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded transition font-medium">Kosongkan</button>
             </div>
             <div class="flex-1 overflow-y-auto p-3 space-y-2 bg-white" id="cart-items">
                 <div class="text-center text-gray-400 mt-10 text-sm" id="empty-msg">Keranjang kosong</div>
             </div>
-            <div class="p-3 md:p-4 border-t bg-gray-50 shrink-0 shadow-lg">
+            
+            <!-- Bagian Bawah: Total & Tombol Bayar Jelas -->
+            <div class="p-4 border-t bg-gray-50 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
                 <div class="flex justify-between font-bold text-lg md:text-xl mb-3 text-gray-800">
                     <span>TOTAL</span> 
-                    <span id="cart-total" class="text-blue-600">Rp0</span>
+                    <span id="cart-total" class="text-blue-600 font-black">Rp0</span>
                 </div>
-                <button onclick="openPayment()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold text-base md:text-lg shadow transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-money-bill-wave"></i>
-                    <span>BAYAR SEKARANG (F4)</span>
+                <button onclick="openPayment()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-4 rounded-xl font-black text-base md:text-lg shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-money-bill-wave text-xl"></i>
+                    <span>BAYAR SEKARANG</span>
                 </button>
             </div>
         </div>
@@ -164,15 +166,36 @@
                             <th class="p-3 md:p-4 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-product-list" class="divide-y text-xs md:text-sm">
-                        <!-- Dimuat JS -->
-                    </tbody>
+                    <tbody id="admin-product-list" class="divide-y text-xs md:text-sm"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- ================= MODALS & STRUK ================= -->
+    <!-- ================= MODAL PEMBAYARAN (INPUT UANG & KEMBALIAN) ================= -->
+    <div id="modal-payment" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-fade-in">
+            <div class="p-5 bg-blue-600 text-white text-center relative">
+                <h3 class="text-blue-100 text-xs md:text-sm font-semibold tracking-wider">TOTAL PEMBAYARAN</h3>
+                <h2 class="font-black text-3xl md:text-4xl mt-1" id="pay-total-display">Rp0</h2>
+            </div>
+            <div class="p-5">
+                <label class="block font-bold text-gray-700 mb-2 text-xs md:text-sm">MASUKAN JUMLAH UANG PELANGGAN (TUNAI)</label>
+                <input type="number" id="input-cash" class="w-full text-xl md:text-2xl font-black p-3.5 border-2 border-blue-400 rounded-xl mb-4 text-right focus:border-blue-600 focus:outline-none bg-blue-50/30" placeholder="0" inputmode="numeric">
+                
+                <div class="flex justify-between items-center mb-5 bg-gray-100 p-3.5 rounded-xl border">
+                    <span class="font-bold text-gray-600 text-sm">KEMBALIAN:</span>
+                    <span class="font-black text-green-600 text-xl md:text-2xl" id="pay-change">Rp0</span>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button onclick="closePayment()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold transition">BATAL</button>
+                    <button onclick="processPayment()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-lg transition">PROSES & CETAK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Tambah/Edit Produk -->
     <div id="modal-produk" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl">
@@ -202,30 +225,6 @@
         </div>
     </div>
 
-    <!-- Modal Pembayaran (Input Uang & Hitung Kembalian Akurat) -->
-    <div id="modal-payment" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
-            <div class="p-5 bg-blue-600 text-white text-center relative">
-                <h3 class="text-blue-100 text-xs md:text-sm font-semibold tracking-wider">TOTAL PEMBAYARAN</h3>
-                <h2 class="font-black text-3xl md:text-4xl mt-1" id="pay-total-display">Rp0</h2>
-            </div>
-            <div class="p-5">
-                <label class="block font-bold text-gray-700 mb-2 text-xs md:text-sm">MASUKAN JUMLAH UANG PELANGGAN (TUNAI)</label>
-                <input type="number" id="input-cash" class="w-full text-xl md:text-2xl font-black p-3.5 border-2 border-blue-400 rounded-xl mb-4 text-right focus:border-blue-600 focus:outline-none" placeholder="0" inputmode="numeric">
-                
-                <div class="flex justify-between items-center mb-5 bg-gray-100 p-3.5 rounded-xl border">
-                    <span class="font-bold text-gray-600 text-sm">KEMBALIAN:</span>
-                    <span class="font-black text-green-600 text-xl md:text-2xl" id="pay-change">Rp0</span>
-                </div>
-                
-                <div class="flex space-x-2">
-                    <button onclick="closePayment()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold transition">BATAL</button>
-                    <button onclick="processPayment()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-lg transition">PROSES</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Struk Print -->
     <div id="receipt" class="hidden font-mono text-xs w-[58mm] bg-white p-2 mx-auto">
         <div class="text-center mb-2"><h2 class="font-bold text-sm">DRINK POS</h2></div>
@@ -239,7 +238,7 @@
         <div class="text-center mt-3 text-[10px]">Terima Kasih ❤️</div>
     </div>
 
-    <!-- ================= JAVASCRIPT ================= -->
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
         const defaultProducts = [
             { id: 1, name: 'Matcha Latte', price: 15000, img: 'https://images.unsplash.com/photo-1515823662972-da6a2b4d3002?w=300&h=300&fit=crop' },
@@ -282,7 +281,28 @@
             if(view === 'dashboard') renderDashboard();
         }
 
-        // ================= KASIR =================
+        // Toggle Tab Khusus Layar HP (Menu vs Keranjang)
+        function switchMobileTab(tab) {
+            const menuSec = document.getElementById('mobile-section-menu');
+            const cartSec = document.getElementById('mobile-section-cart');
+            const btnMenu = document.getElementById('mob-btn-menu');
+            const btnCart = document.getElementById('mob-btn-cart');
+
+            if(tab === 'menu') {
+                menuSec.classList.remove('hidden');
+                cartSec.classList.add('hidden');
+                btnMenu.className = "flex-1 py-2 text-center text-xs font-bold bg-blue-600 rounded text-white shadow";
+                btnCart.className = "flex-1 py-2 text-center text-xs font-bold text-gray-300 rounded";
+            } else {
+                menuSec.classList.add('hidden');
+                cartSec.classList.remove('hidden');
+                cartSec.classList.add('flex');
+                btnCart.className = "flex-1 py-2 text-center text-xs font-bold bg-blue-600 rounded text-white shadow";
+                btnMenu.className = "flex-1 py-2 text-center text-xs font-bold text-gray-300 rounded";
+            }
+        }
+
+        // ================= KASIR LOGIC =================
         function renderKasir() {
             const grid = document.getElementById('product-grid');
             if(products.length === 0) return grid.innerHTML = `<div class="col-span-full text-center text-gray-500 mt-10">Menu kosong. Tambahkan di Admin.</div>`;
@@ -307,20 +327,23 @@
         }
 
         function updateCart() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('mob-cart-count').innerText = totalItems;
+
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             document.getElementById('cart-total').innerText = formatRp(total);
             document.getElementById('empty-msg').style.display = cart.length ? 'none' : 'block';
             
             document.getElementById('cart-items').innerHTML = cart.map((item, idx) => `
-                <div class="bg-white border rounded-xl p-2.5 flex justify-between items-center shadow-sm">
+                <div class="bg-white border rounded-xl p-3 flex justify-between items-center shadow-sm">
                     <div class="w-3/5 pr-2">
                         <div class="font-bold text-xs md:text-sm text-gray-800 truncate">${item.name}</div>
                         <div class="text-blue-600 text-xs font-bold">${formatRp(item.price)}</div>
                     </div>
                     <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
-                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center font-black text-gray-700 bg-white rounded shadow hover:bg-gray-50">-</button>
+                        <button type="button" onclick="changeQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center font-black text-gray-700 bg-white rounded shadow hover:bg-gray-50">-</button>
                         <span class="text-xs md:text-sm font-bold w-6 text-center">${item.qty}</span>
-                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center font-black text-gray-700 bg-white rounded shadow hover:bg-gray-50">+</button>
+                        <button type="button" onclick="changeQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center font-black text-gray-700 bg-white rounded shadow hover:bg-gray-50">+</button>
                     </div>
                 </div>
             `).join('');
@@ -340,7 +363,7 @@
             updateCart(); 
         }
 
-        // Pembayaran & Hitung Kembalian Akurat
+        // ================= PEMBAYARAN & KEMBALIAN =================
         function openPayment() {
             if(!cart.length) {
                 Swal.fire({icon:'error', title:'Keranjang Kosong', text:'Pilih menu minuman terlebih dahulu!', timer: 1500, showConfirmButton: false});
@@ -396,6 +419,7 @@
             cart = []; 
             updateCart(); 
             closePayment();
+            switchMobileTab('menu');
             
             if(!document.getElementById('view-dashboard').classList.contains('hide')){
                 renderDashboard();
@@ -424,7 +448,7 @@
             if(trx) printReceipt(trx);
         }
 
-        // ================= DASHBOARD =================
+        // ================= DASHBOARD & STATISTIK =================
         function renderDashboard() {
             const dateInput = document.getElementById('filter-date');
             let targetDate = new Date();
@@ -437,7 +461,6 @@
             }
 
             const targetDayStart = targetDate.setHours(0,0,0,0);
-            
             document.getElementById('dash-date').innerText = targetDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
             const trxFiltered = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === targetDayStart);

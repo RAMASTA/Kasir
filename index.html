@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS Kedai Minuman</title>
+    <title>POS Kedai Minuman - Pro</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
@@ -16,50 +21,177 @@
             #receipt, #receipt * { visibility: visible; }
             #receipt { position: absolute; left: 0; top: 0; width: 58mm; font-size: 12px; color: black; }
         }
+        .hide { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex overflow-hidden select-none">
 
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl">
-        <div class="p-5 font-bold text-xl border-b border-slate-700">
-            <i class="fa-solid fa-mug-hot text-blue-500 mr-2"></i> DRINK POS
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
+        <div class="p-5 font-bold text-xl border-b border-slate-700 flex items-center">
+            <i class="fa-solid fa-mug-hot text-blue-500 mr-3"></i> DRINK POS
         </div>
         <nav class="flex-1 py-4 space-y-1">
-            <a href="#" class="block px-5 py-3 bg-slate-800 border-l-4 border-blue-500"><i class="fa-solid fa-cash-register w-6"></i> Kasir</a>
+            <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full text-left px-5 py-3 bg-slate-800 border-l-4 border-blue-500 hover:bg-slate-700 transition">
+                <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
+            </button>
+            <button onclick="switchView('kasir')" id="nav-kasir" class="w-full text-left px-5 py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition">
+                <i class="fa-solid fa-cash-register w-6"></i> Kasir
+            </button>
+            <button onclick="switchView('admin')" id="nav-admin" class="w-full text-left px-5 py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition">
+                <i class="fa-solid fa-box w-6"></i> Data Produk
+            </button>
         </nav>
     </aside>
 
-    <!-- KASIR & PRODUK -->
-    <main class="flex-1 flex h-full">
-        <!-- Grid Produk -->
+    <!-- ================= VIEW DASHBOARD (STATISTIK) ================= -->
+    <main id="view-dashboard" class="flex-1 flex flex-col h-full bg-gray-50 overflow-y-auto p-6 transition-all">
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Ringkasan Hari Ini</h2>
+                <p class="text-sm text-gray-500" id="dash-date">Memuat tanggal...</p>
+            </div>
+            <button onclick="resetData()" class="text-xs text-red-500 hover:underline"><i class="fa-solid fa-triangle-exclamation"></i> Reset Semua Data</button>
+        </div>
+
+        <!-- Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-bold mb-1">OMZET HARI INI</p>
+                    <h3 class="text-2xl font-black text-gray-800" id="stat-omzet">Rp0</h3>
+                </div>
+                <div class="text-blue-500 bg-blue-50 p-3 rounded-lg"><i class="fa-solid fa-wallet text-xl"></i></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-green-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-bold mb-1">TRANSAKSI</p>
+                    <h3 class="text-2xl font-black text-gray-800" id="stat-trx">0</h3>
+                </div>
+                <div class="text-green-500 bg-green-50 p-3 rounded-lg"><i class="fa-solid fa-receipt text-xl"></i></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-bold mb-1">ITEM TERJUAL</p>
+                    <h3 class="text-2xl font-black text-gray-800" id="stat-item">0</h3>
+                </div>
+                <div class="text-purple-500 bg-purple-50 p-3 rounded-lg"><i class="fa-solid fa-glass-water text-xl"></i></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-orange-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-bold mb-1">RATA-RATA TRX</p>
+                    <h3 class="text-2xl font-black text-gray-800" id="stat-avg">Rp0</h3>
+                </div>
+                <div class="text-orange-500 bg-orange-50 p-3 rounded-lg"><i class="fa-solid fa-calculator text-xl"></i></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Grafik -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border lg:col-span-2">
+                <h3 class="font-bold text-gray-800 mb-4">Grafik Penjualan 7 Hari Terakhir</h3>
+                <canvas id="salesChart" height="100"></canvas>
+            </div>
+            <!-- Transaksi Terakhir -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border flex flex-col">
+                <h3 class="font-bold text-gray-800 mb-4">5 Transaksi Terakhir</h3>
+                <div class="flex-1 overflow-y-auto space-y-3" id="recent-trx-list">
+                    <!-- Dimuat JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= VIEW KASIR ================= -->
+    <main id="view-kasir" class="flex-1 flex h-full hide transition-all">
         <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 lg:grid-cols-4 gap-4 bg-gray-50 content-start" id="product-grid">
             <!-- Dimuat oleh JS -->
         </div>
-
-        <!-- Keranjang -->
         <div class="w-96 bg-white shadow-xl flex flex-col z-10 border-l">
-            <div class="p-4 bg-slate-900 text-white font-bold"><i class="fa-solid fa-basket-shopping"></i> Keranjang</div>
+            <div class="p-4 bg-slate-900 text-white font-bold flex justify-between">
+                <span><i class="fa-solid fa-basket-shopping"></i> Keranjang</span>
+                <button onclick="clearCart()" class="text-xs bg-red-500 px-2 py-1 rounded hover:bg-red-600">Kosongkan</button>
+            </div>
             <div class="flex-1 overflow-y-auto p-3 space-y-2" id="cart-items">
                 <div class="text-center text-gray-400 mt-10 text-sm" id="empty-msg">Keranjang kosong</div>
             </div>
             <div class="p-4 border-t bg-gray-50">
                 <div class="flex justify-between font-bold text-xl mb-4"><span>TOTAL</span> <span id="cart-total">Rp0</span></div>
-                <button onclick="openPayment()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">BAYAR (F4)</button>
+                <button onclick="openPayment()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">BAYAR (F4)</button>
             </div>
         </div>
     </main>
 
-    <!-- MODAL PEMBAYARAN -->
+    <!-- ================= VIEW ADMIN PRODUK ================= -->
+    <main id="view-admin" class="flex-1 flex flex-col h-full bg-gray-50 hide transition-all">
+        <div class="p-6 bg-white border-b shadow-sm flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Manajemen Produk</h2>
+                <p class="text-sm text-gray-500">Kelola menu yang tampil di kasir.</p>
+            </div>
+            <button onclick="openFormProduk()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold shadow transition">
+                <i class="fa-solid fa-plus mr-1"></i> Tambah Produk
+            </button>
+        </div>
+        <div class="p-6 flex-1 overflow-y-auto">
+            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-800 text-white text-sm">
+                        <tr>
+                            <th class="p-4 w-20">Foto</th>
+                            <th class="p-4">Nama Produk</th>
+                            <th class="p-4">Harga</th>
+                            <th class="p-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-product-list" class="divide-y text-sm">
+                        <!-- Dimuat JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= MODALS & STRUK ================= -->
+    <!-- Modal Tambah/Edit Produk -->
+    <div id="modal-produk" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div class="p-4 bg-slate-800 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modal-produk-title">Tambah Produk</h3>
+                <button onclick="closeFormProduk()" class="text-gray-300 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="simpanProduk(event)" class="p-5 space-y-4">
+                <input type="hidden" id="form-id">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nama Produk *</label>
+                    <input type="text" id="form-nama" required class="w-full border p-2 rounded-lg focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Harga (Rp) *</label>
+                    <input type="number" id="form-harga" required min="0" class="w-full border p-2 rounded-lg focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">URL Foto (Opsional)</label>
+                    <input type="url" id="form-foto" class="w-full border p-2 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="https://link.com/foto.jpg">
+                </div>
+                <div class="pt-4 flex space-x-2">
+                    <button type="button" onclick="closeFormProduk()" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-bold">Batal</button>
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow hover:bg-blue-700">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Pembayaran -->
     <div id="modal-payment" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden">
-            <div class="p-5 bg-blue-600 text-white text-center">
+            <div class="p-5 bg-blue-600 text-white text-center relative">
                 <h3 class="text-blue-100 text-sm">TOTAL PEMBAYARAN</h3>
                 <h2 class="font-bold text-3xl mt-1" id="pay-total-display">Rp0</h2>
             </div>
             <div class="p-5">
                 <label class="block font-bold text-gray-700 mb-2 text-sm">UANG DITERIMA (TUNAI)</label>
-                <input type="number" id="input-cash" class="w-full text-xl font-bold p-3 border rounded-xl mb-4 text-right" placeholder="0">
+                <input type="number" id="input-cash" class="w-full text-xl font-bold p-3 border rounded-xl mb-4 text-right focus:outline-blue-500" placeholder="0">
                 <div class="flex justify-between mb-4 bg-gray-100 p-2 rounded">
                     <span class="font-bold text-gray-600">KEMBALI:</span>
                     <span class="font-bold text-green-600 text-xl" id="pay-change">Rp0</span>
@@ -72,43 +204,80 @@
         </div>
     </div>
 
-    <!-- STRUK PRINT -->
-    <div id="receipt" class="hidden font-mono text-xs w-[58mm] bg-white p-2">
+    <!-- Struk Print (Hidden di Layar) -->
+    <div id="receipt" class="hidden font-mono text-xs w-[58mm] bg-white p-2 mx-auto">
         <div class="text-center mb-2"><h2 class="font-bold text-sm">DRINK POS</h2></div>
-        <div class="border-b border-dashed pb-1 mb-1" id="rec-trx"></div>
+        <div class="border-b border-dashed pb-1 mb-1 flex justify-between text-[10px]">
+            <span id="rec-trx"></span> <span id="rec-date"></span>
+        </div>
         <div id="rec-items" class="border-b border-dashed pb-1 mb-1"></div>
         <div class="flex justify-between font-bold"><span>TOTAL</span><span id="rec-total"></span></div>
         <div class="flex justify-between"><span>TUNAI</span><span id="rec-cash"></span></div>
         <div class="flex justify-between"><span>KEMBALI</span><span id="rec-change"></span></div>
-        <div class="text-center mt-3">Terima Kasih</div>
+        <div class="text-center mt-3 text-[10px]">Terima Kasih ❤️</div>
     </div>
 
+    <!-- ================= JAVASCRIPT ================= -->
     <script>
-        const products = [
+        // Data & Format
+        const defaultProducts = [
             { id: 1, name: 'Matcha Latte', price: 15000, img: 'https://images.unsplash.com/photo-1515823662972-da6a2b4d3002?w=300&h=300&fit=crop' },
             { id: 2, name: 'Thai Tea', price: 12000, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=300&fit=crop' },
-            { id: 3, name: 'Chocolate', price: 13000, img: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=300&h=300&fit=crop' },
-            { id: 4, name: 'Coffee Latte', price: 18000, img: 'https://images.unsplash.com/photo-1570968915860-54d5c310fa6d?w=300&h=300&fit=crop' }
+            { id: 3, name: 'Taro Milk', price: 14000, img: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=300&h=300&fit=crop' }
         ];
-
+        const defaultImg = 'https://images.unsplash.com/photo-1546171753-97d7676e4602?w=300&h=300&fit=crop';
+        
+        let products = JSON.parse(localStorage.getItem('pos_products')) || defaultProducts;
+        let historyTrx = JSON.parse(localStorage.getItem('pos_history')) || [];
         let cart = [];
+        let salesChartInstance = null;
+        
         const formatRp = (num) => 'Rp' + parseInt(num).toLocaleString('id-ID');
 
+        // Init App
         window.onload = () => {
-            document.getElementById('product-grid').innerHTML = products.map(p => `
-                <div onclick="addToCart(${p.id})" class="bg-white rounded-xl shadow-sm border overflow-hidden cursor-pointer hover:border-blue-500">
-                    <img src="${p.img}" class="h-32 w-full object-cover">
-                    <div class="p-3">
-                        <h3 class="font-bold text-gray-800 text-sm">${p.name}</h3>
-                        <p class="text-blue-600 font-bold mt-1">${formatRp(p.price)}</p>
+            if(!localStorage.getItem('pos_products')) localStorage.setItem('pos_products', JSON.stringify(products));
+            document.getElementById('dash-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            renderKasir();
+            renderAdmin();
+            renderDashboard();
+        };
+
+        // Navigasi
+        function switchView(view) {
+            ['dashboard', 'kasir', 'admin'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hide');
+                const btn = document.getElementById(`nav-${v}`);
+                btn.classList.remove('bg-slate-800', 'border-blue-500', 'text-white');
+                btn.classList.add('bg-transparent', 'border-transparent', 'text-slate-300');
+            });
+            document.getElementById(`view-${view}`).classList.remove('hide');
+            const activeBtn = document.getElementById(`nav-${view}`);
+            activeBtn.classList.add('bg-slate-800', 'border-blue-500', 'text-white');
+            activeBtn.classList.remove('bg-transparent', 'border-transparent', 'text-slate-300');
+
+            if(view === 'dashboard') renderDashboard();
+        }
+
+        // ================= KASIR =================
+        function renderKasir() {
+            const grid = document.getElementById('product-grid');
+            if(products.length === 0) return grid.innerHTML = `<div class="col-span-full text-center text-gray-500 mt-10">Menu kosong. Tambahkan di Admin.</div>`;
+            
+            grid.innerHTML = products.map(p => `
+                <div onclick="addToCart(${p.id})" class="bg-white rounded-xl shadow-sm border overflow-hidden cursor-pointer hover:border-blue-500 active:scale-95 transition flex flex-col h-48">
+                    <img src="${p.img || defaultImg}" class="h-28 w-full object-cover">
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <h3 class="font-bold text-gray-800 text-xs leading-tight line-clamp-2">${p.name}</h3>
+                        <p class="text-blue-600 font-black text-sm">${formatRp(p.price)}</p>
                     </div>
                 </div>
             `).join('');
-        };
+        }
 
         function addToCart(id) {
-            const product = products.find(p => p.id == id);
-            const existing = cart.find(c => c.id == id);
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(c => c.id === id);
             if(existing) existing.qty++;
             else cart.push({ ...product, qty: 1 });
             updateCart();
@@ -118,17 +287,16 @@
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             document.getElementById('cart-total').innerText = formatRp(total);
             document.getElementById('empty-msg').style.display = cart.length ? 'none' : 'block';
-            
             document.getElementById('cart-items').innerHTML = cart.map((item, idx) => `
                 <div class="bg-white border rounded p-2 flex justify-between items-center">
-                    <div>
-                        <div class="font-bold text-sm text-gray-800">${item.name}</div>
-                        <div class="text-blue-600 text-xs">${formatRp(item.price)}</div>
+                    <div class="w-3/5">
+                        <div class="font-bold text-sm text-gray-800 truncate">${item.name}</div>
+                        <div class="text-blue-600 text-xs font-bold">${formatRp(item.price)}</div>
                     </div>
-                    <div class="flex items-center space-x-2 bg-gray-100 rounded px-2">
-                        <button onclick="changeQty(${idx}, -1)" class="w-5 font-bold">-</button>
-                        <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
-                        <button onclick="changeQty(${idx}, 1)" class="w-5 font-bold">+</button>
+                    <div class="flex items-center bg-gray-100 rounded px-1 border">
+                        <button onclick="changeQty(${idx}, -1)" class="w-6 h-6 font-bold text-gray-600">-</button>
+                        <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="changeQty(${idx}, 1)" class="w-6 h-6 font-bold text-gray-600">+</button>
                     </div>
                 </div>
             `).join('');
@@ -140,8 +308,11 @@
             updateCart();
         }
 
+        function clearCart() { cart = []; updateCart(); }
+
+        // Pembayaran
         function openPayment() {
-            if(!cart.length) return Swal.fire({icon:'error', title:'Keranjang kosong!'});
+            if(!cart.length) return Swal.fire({icon:'error', title:'Keranjang kosong'});
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             document.getElementById('pay-total-display').innerText = formatRp(total);
             document.getElementById('input-cash').value = '';
@@ -164,25 +335,28 @@
             const cash = parseInt(document.getElementById('input-cash').value) || 0;
             if(cash < total) return Swal.fire({icon: 'error', title: 'Uang Kurang'});
             
-            const trxId = 'TRX-' + new Date().getTime();
-            const data = { id: trxId, total, tendered: cash, change: cash - total, items: cart };
+            const now = new Date();
+            const data = { 
+                id: 'TRX' + now.getTime().toString().slice(-6), 
+                timestamp: now.getTime(), // Penting untuk filter statistik
+                date: `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`, 
+                total, tendered: cash, change: cash - total, items: [...cart] 
+            };
 
-            // Simpan ke LocalStorage agar data tidak hilang saat di-refresh
-            let history = JSON.parse(localStorage.getItem('pos_history')) || [];
-            history.push(data);
-            localStorage.setItem('pos_history', JSON.stringify(history));
+            historyTrx.push(data);
+            localStorage.setItem('pos_history', JSON.stringify(historyTrx));
 
             printReceipt(data);
-            cart = []; updateCart(); closePayment();
-            Swal.fire({icon: 'success', title: 'Berhasil', timer: 1500, showConfirmButton: false});
+            cart = []; updateCart(); closePayment(); renderDashboard();
         }
 
         function printReceipt(data) {
             document.getElementById('receipt').classList.remove('hidden');
             document.getElementById('rec-trx').innerText = data.id;
+            document.getElementById('rec-date').innerText = data.date;
             document.getElementById('rec-items').innerHTML = data.items.map(i => `
-                <div class="flex justify-between"><span>${i.name}</span><span>${formatRp(i.price*i.qty)}</span></div>
-                <div class="text-[10px] text-gray-500">${i.qty}x @${formatRp(i.price)}</div>
+                <div class="flex justify-between mt-1"><span class="font-bold truncate w-2/3">${i.name}</span><span>${formatRp(i.price*i.qty)}</span></div>
+                <div class="text-[9px] text-gray-500">${i.qty}x @${formatRp(i.price)}</div>
             `).join('');
             document.getElementById('rec-total').innerText = formatRp(data.total);
             document.getElementById('rec-cash').innerText = formatRp(data.tendered);
@@ -191,9 +365,162 @@
             document.getElementById('receipt').classList.add('hidden');
         }
 
+        // ================= DASHBOARD & STATISTIK =================
+        function renderDashboard() {
+            const today = new Date().setHours(0,0,0,0);
+            
+            // Filter data hari ini
+            const trxToday = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === today);
+            
+            // Kalkulasi
+            const omzet = trxToday.reduce((sum, t) => sum + t.total, 0);
+            const jumlahTrx = trxToday.length;
+            const itemTerjual = trxToday.reduce((sum, t) => sum + t.items.reduce((s, i) => s + i.qty, 0), 0);
+            const rataRata = jumlahTrx > 0 ? (omzet / jumlahTrx) : 0;
+
+            document.getElementById('stat-omzet').innerText = formatRp(omzet);
+            document.getElementById('stat-trx').innerText = jumlahTrx;
+            document.getElementById('stat-item').innerText = itemTerjual;
+            document.getElementById('stat-avg').innerText = formatRp(Math.round(rataRata));
+
+            // Transaksi Terakhir (Ambil 5 terakhir)
+            const recent = [...historyTrx].reverse().slice(0, 5);
+            document.getElementById('recent-trx-list').innerHTML = recent.length ? recent.map(t => `
+                <div class="border-b pb-2 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-sm text-gray-800">${t.id}</p>
+                        <p class="text-[11px] text-gray-500">${t.date}</p>
+                    </div>
+                    <span class="font-bold text-blue-600">${formatRp(t.total)}</span>
+                </div>
+            `).join('') : '<p class="text-sm text-gray-500">Belum ada transaksi.</p>';
+
+            renderChart();
+        }
+
+        function renderChart() {
+            // Setup data grafik 7 hari terakhir
+            const labels = [];
+            const dataSales = [];
+            for(let i=6; i>=0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+                
+                // Hitung omzet per tanggal
+                const targetDay = d.setHours(0,0,0,0);
+                const dayOmzet = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === targetDay).reduce((sum, t) => sum + t.total, 0);
+                dataSales.push(dayOmzet);
+            }
+
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if(salesChartInstance) salesChartInstance.destroy();
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Omzet Harian (Rp)',
+                        data: dataSales,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function resetData() {
+            Swal.fire({
+                title: 'Hapus seluruh data Transaksi?',
+                text: "Semua laporan dan histori transaksi akan hilang permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Reset'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    historyTrx = [];
+                    localStorage.removeItem('pos_history');
+                    renderDashboard();
+                    Swal.fire('Terhapus!', 'Data transaksi dikosongkan.', 'success');
+                }
+            })
+        }
+
+        // ================= ADMIN PRODUK =================
+        function renderAdmin() {
+            const tbody = document.getElementById('admin-product-list');
+            if(products.length === 0) return tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada produk.</td></tr>`;
+            tbody.innerHTML = products.map(p => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-2"><img src="${p.img || defaultImg}" class="w-12 h-12 rounded object-cover border"></td>
+                    <td class="p-4 font-bold text-gray-700">${p.name}</td>
+                    <td class="p-4 text-blue-600 font-bold">${formatRp(p.price)}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="openFormProduk(${p.id})" class="text-blue-500 mx-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="hapusProduk(${p.id})" class="text-red-500 mx-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openFormProduk(id = null) {
+            if(id) {
+                const prod = products.find(p => p.id === id);
+                document.getElementById('modal-produk-title').innerText = 'Edit Produk';
+                document.getElementById('form-id').value = prod.id;
+                document.getElementById('form-nama').value = prod.name;
+                document.getElementById('form-harga').value = prod.price;
+                document.getElementById('form-foto').value = prod.img === defaultImg ? '' : prod.img;
+            } else {
+                document.getElementById('modal-produk-title').innerText = 'Tambah Produk';
+                document.getElementById('form-id').value = '';
+                document.getElementById('form-nama').value = '';
+                document.getElementById('form-harga').value = '';
+                document.getElementById('form-foto').value = '';
+            }
+            document.getElementById('modal-produk').classList.remove('hidden');
+        }
+
+        function closeFormProduk() { document.getElementById('modal-produk').classList.add('hidden'); }
+
+        function simpanProduk(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-id').value;
+            const name = document.getElementById('form-nama').value;
+            const price = parseInt(document.getElementById('form-harga').value);
+            const img = document.getElementById('form-foto').value || defaultImg;
+
+            if(id) {
+                const idx = products.findIndex(p => p.id == id);
+                products[idx] = { id: parseInt(id), name, price, img };
+            } else {
+                products.push({ id: Date.now(), name, price, img });
+            }
+
+            localStorage.setItem('pos_products', JSON.stringify(products));
+            renderAdmin(); renderKasir(); closeFormProduk(); clearCart();
+            Swal.fire({icon: 'success', title: 'Tersimpan', timer: 1000, showConfirmButton: false});
+        }
+
+        function hapusProduk(id) {
+            if(confirm('Hapus produk ini?')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('pos_products', JSON.stringify(products));
+                renderAdmin(); renderKasir(); clearCart();
+            }
+        }
+
         window.addEventListener('keydown', (e) => {
-            if(e.key === 'F4') { e.preventDefault(); openPayment(); }
-            if(e.key === 'Escape') closePayment();
+            if(!document.getElementById('view-kasir').classList.contains('hide')) {
+                if(e.key === 'F4') { e.preventDefault(); openPayment(); }
+                if(e.key === 'Escape') closePayment();
+            }
         });
     </script>
 </body>

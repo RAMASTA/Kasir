@@ -46,26 +46,34 @@
 
     <!-- ================= VIEW DASHBOARD (STATISTIK) ================= -->
     <main id="view-dashboard" class="flex-1 flex flex-col h-full bg-gray-50 overflow-y-auto p-6 transition-all">
-        <div class="mb-6 flex justify-between items-center">
+        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">Ringkasan Hari Ini</h2>
-                <p class="text-sm text-gray-500" id="dash-date">Memuat tanggal...</p>
+                <h2 class="text-2xl font-bold text-gray-800">Statistik Penjualan</h2>
+                <p class="text-sm text-gray-500 font-medium" id="dash-date">Memuat tanggal...</p>
             </div>
-            <button onclick="resetData()" class="text-xs text-red-500 hover:underline"><i class="fa-solid fa-triangle-exclamation"></i> Reset Semua Data</button>
+            
+            <!-- FILTER KALENDER -->
+            <div class="flex items-center space-x-3 bg-white p-2 rounded-xl shadow-sm border">
+                <span class="text-sm font-bold text-gray-600 pl-2"><i class="fa-solid fa-calendar-day text-blue-500 mr-1"></i> Pilih Tanggal:</span>
+                <input type="date" id="filter-date" onchange="renderDashboard()" class="border border-gray-300 rounded-lg p-2 text-sm focus:border-blue-500 outline-none font-bold text-gray-700 cursor-pointer hover:bg-gray-50">
+                <button onclick="resetData()" class="text-xs bg-red-100 text-red-600 hover:bg-red-200 p-2.5 rounded-lg transition" title="Hapus Semua Riwayat">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500 flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 font-bold mb-1">OMZET HARI INI</p>
+                    <p class="text-xs text-gray-500 font-bold mb-1">OMZET PENJUALAN</p>
                     <h3 class="text-2xl font-black text-gray-800" id="stat-omzet">Rp0</h3>
                 </div>
                 <div class="text-blue-500 bg-blue-50 p-3 rounded-lg"><i class="fa-solid fa-wallet text-xl"></i></div>
             </div>
             <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-green-500 flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 font-bold mb-1">TRANSAKSI</p>
+                    <p class="text-xs text-gray-500 font-bold mb-1">JUMLAH TRANSAKSI</p>
                     <h3 class="text-2xl font-black text-gray-800" id="stat-trx">0</h3>
                 </div>
                 <div class="text-green-500 bg-green-50 p-3 rounded-lg"><i class="fa-solid fa-receipt text-xl"></i></div>
@@ -89,13 +97,16 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Grafik -->
             <div class="bg-white p-5 rounded-xl shadow-sm border lg:col-span-2">
-                <h3 class="font-bold text-gray-800 mb-4">Grafik Penjualan 7 Hari Terakhir</h3>
+                <h3 class="font-bold text-gray-800 mb-4">Grafik 7 Hari Terakhir</h3>
                 <canvas id="salesChart" height="100"></canvas>
             </div>
-            <!-- Transaksi Terakhir -->
-            <div class="bg-white p-5 rounded-xl shadow-sm border flex flex-col">
-                <h3 class="font-bold text-gray-800 mb-4">5 Transaksi Terakhir</h3>
-                <div class="flex-1 overflow-y-auto space-y-3" id="recent-trx-list">
+            <!-- Transaksi Tak Terbatas -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border flex flex-col max-h-[400px]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800">Riwayat Transaksi</h3>
+                    <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold" id="count-trx-badge">0 TRX</span>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-1 pr-2" id="recent-trx-list">
                     <!-- Dimuat JS -->
                 </div>
             </div>
@@ -204,7 +215,7 @@
         </div>
     </div>
 
-    <!-- Struk Print (Hidden di Layar) -->
+    <!-- Struk Print -->
     <div id="receipt" class="hidden font-mono text-xs w-[58mm] bg-white p-2 mx-auto">
         <div class="text-center mb-2"><h2 class="font-bold text-sm">DRINK POS</h2></div>
         <div class="border-b border-dashed pb-1 mb-1 flex justify-between text-[10px]">
@@ -219,7 +230,6 @@
 
     <!-- ================= JAVASCRIPT ================= -->
     <script>
-        // Data & Format
         const defaultProducts = [
             { id: 1, name: 'Matcha Latte', price: 15000, img: 'https://images.unsplash.com/photo-1515823662972-da6a2b4d3002?w=300&h=300&fit=crop' },
             { id: 2, name: 'Thai Tea', price: 12000, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=300&fit=crop' },
@@ -234,16 +244,19 @@
         
         const formatRp = (num) => 'Rp' + parseInt(num).toLocaleString('id-ID');
 
-        // Init App
         window.onload = () => {
             if(!localStorage.getItem('pos_products')) localStorage.setItem('pos_products', JSON.stringify(products));
-            document.getElementById('dash-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Set Kalender Default ke Hari Ini
+            const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+            document.getElementById('filter-date').value = localISOTime;
+
             renderKasir();
             renderAdmin();
             renderDashboard();
         };
 
-        // Navigasi
         function switchView(view) {
             ['dashboard', 'kasir', 'admin'].forEach(v => {
                 document.getElementById(`view-${v}`).classList.add('hide');
@@ -338,8 +351,8 @@
             const now = new Date();
             const data = { 
                 id: 'TRX' + now.getTime().toString().slice(-6), 
-                timestamp: now.getTime(), // Penting untuk filter statistik
-                date: `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`, 
+                timestamp: now.getTime(),
+                date: `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`, 
                 total, tendered: cash, change: cash - total, items: [...cart] 
             };
 
@@ -347,7 +360,12 @@
             localStorage.setItem('pos_history', JSON.stringify(historyTrx));
 
             printReceipt(data);
-            cart = []; updateCart(); closePayment(); renderDashboard();
+            cart = []; updateCart(); closePayment();
+            
+            // Jika tampilan yang aktif adalah dashboard, perbarui secara live
+            if(!document.getElementById('view-dashboard').classList.contains('hide')){
+                renderDashboard();
+            }
         }
 
         function printReceipt(data) {
@@ -365,17 +383,37 @@
             document.getElementById('receipt').classList.add('hidden');
         }
 
-        // ================= DASHBOARD & STATISTIK =================
+        // Cetak ulang dari riwayat dashboard
+        function printReceiptByData(id) {
+            const trx = historyTrx.find(t => t.id === id);
+            if(trx) printReceipt(trx);
+        }
+
+        // ================= DASHBOARD & STATISTIK DENGAN KALENDER =================
         function renderDashboard() {
-            const today = new Date().setHours(0,0,0,0);
+            const dateInput = document.getElementById('filter-date');
+            let targetDate = new Date(); // Default hari ini jika kosong
+
+            if (dateInput.value) {
+                targetDate = new Date(dateInput.value);
+            } else {
+                // Set input ke hari ini
+                const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+                dateInput.value = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+            }
+
+            const targetDayStart = targetDate.setHours(0,0,0,0);
             
-            // Filter data hari ini
-            const trxToday = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === today);
+            // Ubah Teks Judul Tanggal
+            document.getElementById('dash-date').innerText = targetDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Filter Data Berdasarkan Tanggal yang Dipilih
+            const trxFiltered = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === targetDayStart);
             
             // Kalkulasi
-            const omzet = trxToday.reduce((sum, t) => sum + t.total, 0);
-            const jumlahTrx = trxToday.length;
-            const itemTerjual = trxToday.reduce((sum, t) => sum + t.items.reduce((s, i) => s + i.qty, 0), 0);
+            const omzet = trxFiltered.reduce((sum, t) => sum + t.total, 0);
+            const jumlahTrx = trxFiltered.length;
+            const itemTerjual = trxFiltered.reduce((sum, t) => sum + t.items.reduce((s, i) => s + i.qty, 0), 0);
             const rataRata = jumlahTrx > 0 ? (omzet / jumlahTrx) : 0;
 
             document.getElementById('stat-omzet').innerText = formatRp(omzet);
@@ -383,33 +421,41 @@
             document.getElementById('stat-item').innerText = itemTerjual;
             document.getElementById('stat-avg').innerText = formatRp(Math.round(rataRata));
 
-            // Transaksi Terakhir (Ambil 5 terakhir)
-            const recent = [...historyTrx].reverse().slice(0, 5);
+            // Transaksi List (TAK TERBATAS untuk tanggal tersebut)
+            const recent = [...trxFiltered].reverse(); 
+            document.getElementById('count-trx-badge').innerText = `${recent.length} Transaksi`;
+            
             document.getElementById('recent-trx-list').innerHTML = recent.length ? recent.map(t => `
-                <div class="border-b pb-2 flex justify-between items-center">
-                    <div>
+                <div class="border-b border-gray-100 pb-3 mb-2 flex justify-between items-center hover:bg-gray-50 p-2 rounded-lg transition">
+                    <div class="w-2/3">
                         <p class="font-bold text-sm text-gray-800">${t.id}</p>
                         <p class="text-[11px] text-gray-500">${t.date}</p>
+                        <p class="text-[11px] text-gray-600 mt-1 line-clamp-1">${t.items.map(i => i.qty + 'x ' + i.name).join(', ')}</p>
                     </div>
-                    <span class="font-bold text-blue-600">${formatRp(t.total)}</span>
+                    <div class="text-right flex flex-col items-end">
+                        <span class="font-bold text-blue-600">${formatRp(t.total)}</span>
+                        <button onclick="printReceiptByData('${t.id}')" class="text-[10px] text-gray-500 hover:text-blue-600 hover:bg-blue-50 border border-gray-200 bg-white rounded px-2 py-1 mt-1 shadow-sm transition"><i class="fa-solid fa-print"></i> Cetak</button>
+                    </div>
                 </div>
-            `).join('') : '<p class="text-sm text-gray-500">Belum ada transaksi.</p>';
+            `).join('') : '<div class="text-center p-8 text-gray-400"><i class="fa-solid fa-calendar-xmark text-3xl mb-2 block text-gray-300"></i> Tidak ada penjualan pada tanggal ini</div>';
 
-            renderChart();
+            renderChart(targetDate);
         }
 
-        function renderChart() {
-            // Setup data grafik 7 hari terakhir
+        function renderChart(targetDateObj) {
             const labels = [];
             const dataSales = [];
+            
+            // Loop 7 hari ke belakang dari tanggal kalender yang dipilih
             for(let i=6; i>=0; i--) {
-                const d = new Date();
+                const d = new Date(targetDateObj);
                 d.setDate(d.getDate() - i);
                 labels.push(`${d.getDate()}/${d.getMonth()+1}`);
                 
-                // Hitung omzet per tanggal
                 const targetDay = d.setHours(0,0,0,0);
-                const dayOmzet = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === targetDay).reduce((sum, t) => sum + t.total, 0);
+                const dayOmzet = historyTrx
+                    .filter(t => new Date(t.timestamp).setHours(0,0,0,0) === targetDay)
+                    .reduce((sum, t) => sum + t.total, 0);
                 dataSales.push(dayOmzet);
             }
 
@@ -436,7 +482,7 @@
         function resetData() {
             Swal.fire({
                 title: 'Hapus seluruh data Transaksi?',
-                text: "Semua laporan dan histori transaksi akan hilang permanen!",
+                text: "Semua laporan dan histori dari hari pertama akan hilang permanen!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -509,11 +555,19 @@
         }
 
         function hapusProduk(id) {
-            if(confirm('Hapus produk ini?')) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('pos_products', JSON.stringify(products));
-                renderAdmin(); renderKasir(); clearCart();
-            }
+            Swal.fire({
+                title: 'Hapus Menu?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus'
+            }).then((result) => {
+                if(result.isConfirmed) {
+                    products = products.filter(p => p.id !== id);
+                    localStorage.setItem('pos_products', JSON.stringify(products));
+                    renderAdmin(); renderKasir(); clearCart();
+                }
+            })
         }
 
         window.addEventListener('keydown', (e) => {

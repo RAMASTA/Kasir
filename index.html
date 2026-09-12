@@ -24,138 +24,147 @@
         .hide { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-100 h-screen flex overflow-hidden select-none">
+<body class="bg-gray-100 h-screen flex flex-col md:flex-row overflow-hidden select-none">
 
     <!-- ================= SIDEBAR ================= -->
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
-        <div class="p-5 font-bold text-xl border-b border-slate-700 flex items-center">
-            <i class="fa-solid fa-mug-hot text-blue-500 mr-3"></i> DRINK POS
+    <aside class="w-full md:w-64 bg-slate-900 text-white flex md:flex-col justify-between shadow-xl z-20">
+        <div class="p-4 md:p-5 font-bold text-lg md:text-xl border-b border-slate-700 flex items-center">
+            <i class="fa-solid fa-mug-hot text-blue-500 mr-2 md:mr-3"></i> DRINK POS
         </div>
-        <nav class="flex-1 py-4 space-y-1">
-            <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full text-left px-5 py-3 bg-slate-800 border-l-4 border-blue-500 hover:bg-slate-700 transition">
+        <nav class="flex md:flex-col py-2 md:py-4 space-x-2 md:space-x-0 md:space-y-1 px-2 md:px-0 flex-1 overflow-x-auto">
+            <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full text-left px-3 md:px-5 py-2 md:py-3 bg-slate-800 border-l-4 border-blue-500 hover:bg-slate-700 transition text-xs md:text-sm whitespace-nowrap">
                 <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
             </button>
-            <button onclick="switchView('kasir')" id="nav-kasir" class="w-full text-left px-5 py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition">
+            <button onclick="switchView('kasir')" id="nav-kasir" class="w-full text-left px-3 md:px-5 py-2 md:py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition text-xs md:text-sm whitespace-nowrap">
                 <i class="fa-solid fa-cash-register w-6"></i> Kasir
             </button>
-            <button onclick="switchView('admin')" id="nav-admin" class="w-full text-left px-5 py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition">
+            <button onclick="switchView('admin')" id="nav-admin" class="w-full text-left px-3 md:px-5 py-2 md:py-3 border-l-4 border-transparent text-slate-300 hover:bg-slate-700 transition text-xs md:text-sm whitespace-nowrap">
                 <i class="fa-solid fa-box w-6"></i> Data Produk
             </button>
         </nav>
     </aside>
 
     <!-- ================= VIEW DASHBOARD (STATISTIK) ================= -->
-    <main id="view-dashboard" class="flex-1 flex flex-col h-full bg-gray-50 overflow-y-auto p-6 transition-all">
+    <main id="view-dashboard" class="flex-1 flex flex-col h-full bg-gray-50 overflow-y-auto p-4 md:p-6 transition-all">
         <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">Statistik Penjualan</h2>
-                <p class="text-sm text-gray-500 font-medium" id="dash-date">Memuat tanggal...</p>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Statistik Penjualan</h2>
+                <p class="text-xs md:text-sm text-gray-500 font-medium" id="dash-date">Memuat tanggal...</p>
             </div>
             
-            <!-- FILTER KALENDER -->
-            <div class="flex items-center space-x-3 bg-white p-2 rounded-xl shadow-sm border">
-                <span class="text-sm font-bold text-gray-600 pl-2"><i class="fa-solid fa-calendar-day text-blue-500 mr-1"></i> Pilih Tanggal:</span>
-                <input type="date" id="filter-date" onchange="renderDashboard()" class="border border-gray-300 rounded-lg p-2 text-sm focus:border-blue-500 outline-none font-bold text-gray-700 cursor-pointer hover:bg-gray-50">
-                <button onclick="resetData()" class="text-xs bg-red-100 text-red-600 hover:bg-red-200 p-2.5 rounded-lg transition" title="Hapus Semua Riwayat">
+            <!-- FILTER KALENDAR -->
+            <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-xl shadow-sm border w-full md:w-auto">
+                <span class="text-xs md:text-sm font-bold text-gray-600 pl-2"><i class="fa-solid fa-calendar-day text-blue-500 mr-1"></i> Tanggal:</span>
+                <input type="date" id="filter-date" onchange="renderDashboard()" class="border border-gray-300 rounded-lg p-1.5 md:p-2 text-xs md:text-sm focus:border-blue-500 outline-none font-bold text-gray-700 cursor-pointer">
+                <button onclick="resetData()" class="text-xs bg-red-100 text-red-600 hover:bg-red-200 p-2 rounded-lg transition" title="Hapus Semua Riwayat">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         </div>
 
         <!-- Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500 flex justify-between items-center">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border-l-4 border-blue-500 flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 font-bold mb-1">OMZET PENJUALAN</p>
-                    <h3 class="text-2xl font-black text-gray-800" id="stat-omzet">Rp0</h3>
+                    <p class="text-[10px] md:text-xs text-gray-500 font-bold mb-1">OMZET</p>
+                    <h3 class="text-lg md:text-2xl font-black text-gray-800 truncate" id="stat-omzet">Rp0</h3>
                 </div>
-                <div class="text-blue-500 bg-blue-50 p-3 rounded-lg"><i class="fa-solid fa-wallet text-xl"></i></div>
+                <div class="text-blue-500 bg-blue-50 p-2 md:p-3 rounded-lg"><i class="fa-solid fa-wallet text-base md:text-xl"></i></div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-green-500 flex justify-between items-center">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border-l-4 border-green-500 flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 font-bold mb-1">JUMLAH TRANSAKSI</p>
-                    <h3 class="text-2xl font-black text-gray-800" id="stat-trx">0</h3>
+                    <p class="text-[10px] md:text-xs text-gray-500 font-bold mb-1">TRANSAKSI</p>
+                    <h3 class="text-lg md:text-2xl font-black text-gray-800" id="stat-trx">0</h3>
                 </div>
-                <div class="text-green-500 bg-green-50 p-3 rounded-lg"><i class="fa-solid fa-receipt text-xl"></i></div>
+                <div class="text-green-500 bg-green-50 p-2 md:p-3 rounded-lg"><i class="fa-solid fa-receipt text-base md:text-xl"></i></div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-500 flex justify-between items-center">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border-l-4 border-purple-500 flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 font-bold mb-1">ITEM TERJUAL</p>
-                    <h3 class="text-2xl font-black text-gray-800" id="stat-item">0</h3>
+                    <p class="text-[10px] md:text-xs text-gray-500 font-bold mb-1">ITEM TERJUAL</p>
+                    <h3 class="text-lg md:text-2xl font-black text-gray-800" id="stat-item">0</h3>
                 </div>
-                <div class="text-purple-500 bg-purple-50 p-3 rounded-lg"><i class="fa-solid fa-glass-water text-xl"></i></div>
+                <div class="text-purple-500 bg-purple-50 p-2 md:p-3 rounded-lg"><i class="fa-solid fa-glass-water text-base md:text-xl"></i></div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-orange-500 flex justify-between items-center">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border-l-4 border-orange-500 flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 font-bold mb-1">RATA-RATA TRX</p>
-                    <h3 class="text-2xl font-black text-gray-800" id="stat-avg">Rp0</h3>
+                    <p class="text-[10px] md:text-xs text-gray-500 font-bold mb-1">RATA-RATA</p>
+                    <h3 class="text-lg md:text-2xl font-black text-gray-800 truncate" id="stat-avg">Rp0</h3>
                 </div>
-                <div class="text-orange-500 bg-orange-50 p-3 rounded-lg"><i class="fa-solid fa-calculator text-xl"></i></div>
+                <div class="text-orange-500 bg-orange-50 p-2 md:p-3 rounded-lg"><i class="fa-solid fa-calculator text-base md:text-xl"></i></div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Grafik -->
-            <div class="bg-white p-5 rounded-xl shadow-sm border lg:col-span-2">
-                <h3 class="font-bold text-gray-800 mb-4">Grafik 7 Hari Terakhir</h3>
-                <canvas id="salesChart" height="100"></canvas>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-10">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border lg:col-span-2">
+                <h3 class="font-bold text-gray-800 mb-4 text-sm md:text-base">Grafik 7 Hari Terakhir</h3>
+                <canvas id="salesChart" height="120"></canvas>
             </div>
-            <!-- Transaksi Tak Terbatas -->
-            <div class="bg-white p-5 rounded-xl shadow-sm border flex flex-col max-h-[400px]">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border flex flex-col max-h-[450px]">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-gray-800">Riwayat Transaksi</h3>
+                    <h3 class="font-bold text-gray-800 text-sm md:text-base">Riwayat Transaksi</h3>
                     <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold" id="count-trx-badge">0 TRX</span>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-1 pr-2" id="recent-trx-list">
+                <div class="flex-1 overflow-y-auto space-y-1 pr-1" id="recent-trx-list">
                     <!-- Dimuat JS -->
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ================= VIEW KASIR ================= -->
-    <main id="view-kasir" class="flex-1 flex h-full hide transition-all">
-        <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 lg:grid-cols-4 gap-4 bg-gray-50 content-start" id="product-grid">
-            <!-- Dimuat oleh JS -->
-        </div>
-        <div class="w-96 bg-white shadow-xl flex flex-col z-10 border-l">
-            <div class="p-4 bg-slate-900 text-white font-bold flex justify-between">
-                <span><i class="fa-solid fa-basket-shopping"></i> Keranjang</span>
-                <button onclick="clearCart()" class="text-xs bg-red-500 px-2 py-1 rounded hover:bg-red-600">Kosongkan</button>
+    <!-- ================= VIEW KASIR (PERBAIKAN TATA LETAK & TOMBOL) ================= -->
+    <main id="view-kasir" class="flex-1 flex flex-col md:flex-row h-full hide transition-all overflow-hidden">
+        <!-- Grid Produk -->
+        <div class="flex-1 overflow-y-auto p-3 md:p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 bg-gray-50 content-start">
+            <div id="product-grid" class="contents">
+                <!-- Dimuat oleh JS -->
             </div>
-            <div class="flex-1 overflow-y-auto p-3 space-y-2" id="cart-items">
+        </div>
+
+        <!-- Keranjang (Fixed layout agar tombol bayar selalu terlihat di bawah) -->
+        <div class="w-full md:w-96 bg-white shadow-xl flex flex-col z-10 border-l h-[50vh] md:h-full">
+            <div class="p-3 md:p-4 bg-slate-900 text-white font-bold flex justify-between items-center shrink-0">
+                <span class="text-sm md:text-base"><i class="fa-solid fa-basket-shopping"></i> Keranjang</span>
+                <button onclick="clearCart()" class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition font-medium">Kosongkan</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-3 space-y-2 bg-white" id="cart-items">
                 <div class="text-center text-gray-400 mt-10 text-sm" id="empty-msg">Keranjang kosong</div>
             </div>
-            <div class="p-4 border-t bg-gray-50">
-                <div class="flex justify-between font-bold text-xl mb-4"><span>TOTAL</span> <span id="cart-total">Rp0</span></div>
-                <button onclick="openPayment()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">BAYAR (F4)</button>
+            <div class="p-3 md:p-4 border-t bg-gray-50 shrink-0 shadow-lg">
+                <div class="flex justify-between font-bold text-lg md:text-xl mb-3 text-gray-800">
+                    <span>TOTAL</span> 
+                    <span id="cart-total" class="text-blue-600">Rp0</span>
+                </div>
+                <button onclick="openPayment()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold text-base md:text-lg shadow transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <span>BAYAR SEKARANG (F4)</span>
+                </button>
             </div>
         </div>
     </main>
 
     <!-- ================= VIEW ADMIN PRODUK ================= -->
     <main id="view-admin" class="flex-1 flex flex-col h-full bg-gray-50 hide transition-all">
-        <div class="p-6 bg-white border-b shadow-sm flex justify-between items-center">
+        <div class="p-4 md:p-6 bg-white border-b shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">Manajemen Produk</h2>
-                <p class="text-sm text-gray-500">Kelola menu yang tampil di kasir.</p>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Manajemen Produk</h2>
+                <p class="text-xs md:text-sm text-gray-500">Kelola menu yang tampil di kasir.</p>
             </div>
-            <button onclick="openFormProduk()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold shadow transition">
+            <button onclick="openFormProduk()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold shadow transition text-sm">
                 <i class="fa-solid fa-plus mr-1"></i> Tambah Produk
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-y-auto">
+        <div class="p-4 md:p-6 flex-1 overflow-y-auto">
             <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-800 text-white text-sm">
+                    <thead class="bg-slate-800 text-white text-xs md:text-sm">
                         <tr>
-                            <th class="p-4 w-20">Foto</th>
-                            <th class="p-4">Nama Produk</th>
-                            <th class="p-4">Harga</th>
-                            <th class="p-4 text-center">Aksi</th>
+                            <th class="p-3 md:p-4 w-16 md:w-20">Foto</th>
+                            <th class="p-3 md:p-4">Nama Produk</th>
+                            <th class="p-3 md:p-4">Harga</th>
+                            <th class="p-3 md:p-4 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-product-list" class="divide-y text-sm">
+                    <tbody id="admin-product-list" class="divide-y text-xs md:text-sm">
                         <!-- Dimuat JS -->
                     </tbody>
                 </table>
@@ -175,41 +184,43 @@
                 <input type="hidden" id="form-id">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Nama Produk *</label>
-                    <input type="text" id="form-nama" required class="w-full border p-2 rounded-lg focus:border-blue-500 focus:outline-none">
+                    <input type="text" id="form-nama" required class="w-full border p-2.5 rounded-lg focus:border-blue-500 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Harga (Rp) *</label>
-                    <input type="number" id="form-harga" required min="0" class="w-full border p-2 rounded-lg focus:border-blue-500 focus:outline-none">
+                    <input type="number" id="form-harga" required min="0" class="w-full border p-2.5 rounded-lg focus:border-blue-500 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">URL Foto (Opsional)</label>
-                    <input type="url" id="form-foto" class="w-full border p-2 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="https://link.com/foto.jpg">
+                    <input type="url" id="form-foto" class="w-full border p-2.5 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="https://link.com/foto.jpg">
                 </div>
                 <div class="pt-4 flex space-x-2">
-                    <button type="button" onclick="closeFormProduk()" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-bold">Batal</button>
-                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow hover:bg-blue-700">Simpan</button>
+                    <button type="button" onclick="closeFormProduk()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-lg font-bold">Batal</button>
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-bold shadow hover:bg-blue-700">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Pembayaran -->
+    <!-- Modal Pembayaran (Input Uang & Hitung Kembalian Akurat) -->
     <div id="modal-payment" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
             <div class="p-5 bg-blue-600 text-white text-center relative">
-                <h3 class="text-blue-100 text-sm">TOTAL PEMBAYARAN</h3>
-                <h2 class="font-bold text-3xl mt-1" id="pay-total-display">Rp0</h2>
+                <h3 class="text-blue-100 text-xs md:text-sm font-semibold tracking-wider">TOTAL PEMBAYARAN</h3>
+                <h2 class="font-black text-3xl md:text-4xl mt-1" id="pay-total-display">Rp0</h2>
             </div>
             <div class="p-5">
-                <label class="block font-bold text-gray-700 mb-2 text-sm">UANG DITERIMA (TUNAI)</label>
-                <input type="number" id="input-cash" class="w-full text-xl font-bold p-3 border rounded-xl mb-4 text-right focus:outline-blue-500" placeholder="0">
-                <div class="flex justify-between mb-4 bg-gray-100 p-2 rounded">
-                    <span class="font-bold text-gray-600">KEMBALI:</span>
-                    <span class="font-bold text-green-600 text-xl" id="pay-change">Rp0</span>
+                <label class="block font-bold text-gray-700 mb-2 text-xs md:text-sm">MASUKAN JUMLAH UANG PELANGGAN (TUNAI)</label>
+                <input type="number" id="input-cash" class="w-full text-xl md:text-2xl font-black p-3.5 border-2 border-blue-400 rounded-xl mb-4 text-right focus:border-blue-600 focus:outline-none" placeholder="0" inputmode="numeric">
+                
+                <div class="flex justify-between items-center mb-5 bg-gray-100 p-3.5 rounded-xl border">
+                    <span class="font-bold text-gray-600 text-sm">KEMBALIAN:</span>
+                    <span class="font-black text-green-600 text-xl md:text-2xl" id="pay-change">Rp0</span>
                 </div>
+                
                 <div class="flex space-x-2">
-                    <button onclick="closePayment()" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">BATAL (ESC)</button>
-                    <button onclick="processPayment()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">PROSES</button>
+                    <button onclick="closePayment()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold transition">BATAL</button>
+                    <button onclick="processPayment()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-lg transition">PROSES</button>
                 </div>
             </div>
         </div>
@@ -247,7 +258,6 @@
         window.onload = () => {
             if(!localStorage.getItem('pos_products')) localStorage.setItem('pos_products', JSON.stringify(products));
             
-            // Set Kalender Default ke Hari Ini
             const tzoffset = (new Date()).getTimezoneOffset() * 60000;
             const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
             document.getElementById('filter-date').value = localISOTime;
@@ -278,11 +288,11 @@
             if(products.length === 0) return grid.innerHTML = `<div class="col-span-full text-center text-gray-500 mt-10">Menu kosong. Tambahkan di Admin.</div>`;
             
             grid.innerHTML = products.map(p => `
-                <div onclick="addToCart(${p.id})" class="bg-white rounded-xl shadow-sm border overflow-hidden cursor-pointer hover:border-blue-500 active:scale-95 transition flex flex-col h-48">
-                    <img src="${p.img || defaultImg}" class="h-28 w-full object-cover">
-                    <div class="p-3 flex-1 flex flex-col justify-between">
+                <div onclick="addToCart(${p.id})" class="bg-white rounded-xl shadow-sm border overflow-hidden cursor-pointer hover:border-blue-500 active:scale-95 transition flex flex-col h-44 md:h-48">
+                    <img src="${p.img || defaultImg}" class="h-24 md:h-28 w-full object-cover">
+                    <div class="p-2.5 md:p-3 flex-1 flex flex-col justify-between">
                         <h3 class="font-bold text-gray-800 text-xs leading-tight line-clamp-2">${p.name}</h3>
-                        <p class="text-blue-600 font-black text-sm">${formatRp(p.price)}</p>
+                        <p class="text-blue-600 font-black text-xs md:text-sm">${formatRp(p.price)}</p>
                     </div>
                 </div>
             `).join('');
@@ -300,16 +310,17 @@
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             document.getElementById('cart-total').innerText = formatRp(total);
             document.getElementById('empty-msg').style.display = cart.length ? 'none' : 'block';
+            
             document.getElementById('cart-items').innerHTML = cart.map((item, idx) => `
-                <div class="bg-white border rounded p-2 flex justify-between items-center">
-                    <div class="w-3/5">
-                        <div class="font-bold text-sm text-gray-800 truncate">${item.name}</div>
+                <div class="bg-white border rounded-xl p-2.5 flex justify-between items-center shadow-sm">
+                    <div class="w-3/5 pr-2">
+                        <div class="font-bold text-xs md:text-sm text-gray-800 truncate">${item.name}</div>
                         <div class="text-blue-600 text-xs font-bold">${formatRp(item.price)}</div>
                     </div>
-                    <div class="flex items-center bg-gray-100 rounded px-1 border">
-                        <button onclick="changeQty(${idx}, -1)" class="w-6 h-6 font-bold text-gray-600">-</button>
-                        <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
-                        <button onclick="changeQty(${idx}, 1)" class="w-6 h-6 font-bold text-gray-600">+</button>
+                    <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
+                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center font-black text-gray-700 bg-white rounded shadow hover:bg-gray-50">-</button>
+                        <span class="text-xs md:text-sm font-bold w-6 text-center">${item.qty}</span>
+                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center font-black text-gray-700 bg-white rounded shadow hover:bg-gray-50">+</button>
                     </div>
                 </div>
             `).join('');
@@ -317,19 +328,29 @@
 
         function changeQty(idx, delta) {
             cart[idx].qty += delta;
-            if(cart[idx].qty <= 0) cart.splice(idx, 1);
+            if(cart[idx].qty <= 0) {
+                cart.splice(idx, 1);
+            }
             updateCart();
         }
 
-        function clearCart() { cart = []; updateCart(); }
+        function clearCart() { 
+            if(cart.length === 0) return;
+            cart = []; 
+            updateCart(); 
+        }
 
-        // Pembayaran
+        // Pembayaran & Hitung Kembalian Akurat
         function openPayment() {
-            if(!cart.length) return Swal.fire({icon:'error', title:'Keranjang kosong'});
+            if(!cart.length) {
+                Swal.fire({icon:'error', title:'Keranjang Kosong', text:'Pilih menu minuman terlebih dahulu!', timer: 1500, showConfirmButton: false});
+                return;
+            }
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             document.getElementById('pay-total-display').innerText = formatRp(total);
             document.getElementById('input-cash').value = '';
             document.getElementById('pay-change').innerText = 'Rp0';
+            document.getElementById('pay-change').className = 'font-black text-green-600 text-xl md:text-2xl';
             document.getElementById('modal-payment').classList.remove('hidden');
             setTimeout(() => document.getElementById('input-cash').focus(), 100);
         }
@@ -338,15 +359,27 @@
 
         document.getElementById('input-cash').addEventListener('input', function() {
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const change = (parseInt(this.value) || 0) - total;
-            document.getElementById('pay-change').innerText = change >= 0 ? formatRp(change) : 'Rp0';
-            document.getElementById('pay-change').className = change >= 0 ? 'font-bold text-green-600 text-xl' : 'font-bold text-red-500 text-xl';
+            const cash = parseInt(this.value) || 0;
+            const change = cash - total;
+            
+            const changeElem = document.getElementById('pay-change');
+            if(change >= 0) {
+                changeElem.innerText = formatRp(change);
+                changeElem.className = 'font-black text-green-600 text-xl md:text-2xl';
+            } else {
+                changeElem.innerText = '- ' + formatRp(Math.abs(change));
+                changeElem.className = 'font-black text-red-500 text-xl md:text-2xl';
+            }
         });
 
         function processPayment() {
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             const cash = parseInt(document.getElementById('input-cash').value) || 0;
-            if(cash < total) return Swal.fire({icon: 'error', title: 'Uang Kurang'});
+            
+            if(cash < total) {
+                Swal.fire({icon: 'error', title: 'Uang Kurang', text: 'Jumlah uang tunai dari pelanggan belum mencukupi!'});
+                return;
+            }
             
             const now = new Date();
             const data = { 
@@ -360,12 +393,15 @@
             localStorage.setItem('pos_history', JSON.stringify(historyTrx));
 
             printReceipt(data);
-            cart = []; updateCart(); closePayment();
+            cart = []; 
+            updateCart(); 
+            closePayment();
             
-            // Jika tampilan yang aktif adalah dashboard, perbarui secara live
             if(!document.getElementById('view-dashboard').classList.contains('hide')){
                 renderDashboard();
             }
+            
+            Swal.fire({icon: 'success', title: 'Transaksi Berhasil!', text: `Kembalian: ${formatRp(data.change)}`, timer: 1800, showConfirmButton: false});
         }
 
         function printReceipt(data) {
@@ -383,34 +419,29 @@
             document.getElementById('receipt').classList.add('hidden');
         }
 
-        // Cetak ulang dari riwayat dashboard
         function printReceiptByData(id) {
             const trx = historyTrx.find(t => t.id === id);
             if(trx) printReceipt(trx);
         }
 
-        // ================= DASHBOARD & STATISTIK DENGAN KALENDER =================
+        // ================= DASHBOARD =================
         function renderDashboard() {
             const dateInput = document.getElementById('filter-date');
-            let targetDate = new Date(); // Default hari ini jika kosong
+            let targetDate = new Date();
 
             if (dateInput.value) {
                 targetDate = new Date(dateInput.value);
             } else {
-                // Set input ke hari ini
                 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
                 dateInput.value = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
             }
 
             const targetDayStart = targetDate.setHours(0,0,0,0);
             
-            // Ubah Teks Judul Tanggal
             document.getElementById('dash-date').innerText = targetDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
-            // Filter Data Berdasarkan Tanggal yang Dipilih
             const trxFiltered = historyTrx.filter(t => new Date(t.timestamp).setHours(0,0,0,0) === targetDayStart);
             
-            // Kalkulasi
             const omzet = trxFiltered.reduce((sum, t) => sum + t.total, 0);
             const jumlahTrx = trxFiltered.length;
             const itemTerjual = trxFiltered.reduce((sum, t) => sum + t.items.reduce((s, i) => s + i.qty, 0), 0);
@@ -421,7 +452,6 @@
             document.getElementById('stat-item').innerText = itemTerjual;
             document.getElementById('stat-avg').innerText = formatRp(Math.round(rataRata));
 
-            // Transaksi List (TAK TERBATAS untuk tanggal tersebut)
             const recent = [...trxFiltered].reverse(); 
             document.getElementById('count-trx-badge').innerText = `${recent.length} Transaksi`;
             
@@ -433,11 +463,11 @@
                         <p class="text-[11px] text-gray-600 mt-1 line-clamp-1">${t.items.map(i => i.qty + 'x ' + i.name).join(', ')}</p>
                     </div>
                     <div class="text-right flex flex-col items-end">
-                        <span class="font-bold text-blue-600">${formatRp(t.total)}</span>
+                        <span class="font-bold text-blue-600 text-sm">${formatRp(t.total)}</span>
                         <button onclick="printReceiptByData('${t.id}')" class="text-[10px] text-gray-500 hover:text-blue-600 hover:bg-blue-50 border border-gray-200 bg-white rounded px-2 py-1 mt-1 shadow-sm transition"><i class="fa-solid fa-print"></i> Cetak</button>
                     </div>
                 </div>
-            `).join('') : '<div class="text-center p-8 text-gray-400"><i class="fa-solid fa-calendar-xmark text-3xl mb-2 block text-gray-300"></i> Tidak ada penjualan pada tanggal ini</div>';
+            `).join('') : '<div class="text-center p-8 text-gray-400"><i class="fa-solid fa-calendar-xmark text-3xl mb-2 block text-gray-300"></i> Tidak ada penjualan</div>';
 
             renderChart(targetDate);
         }
@@ -446,7 +476,6 @@
             const labels = [];
             const dataSales = [];
             
-            // Loop 7 hari ke belakang dari tanggal kalender yang dipilih
             for(let i=6; i>=0; i--) {
                 const d = new Date(targetDateObj);
                 d.setDate(d.getDate() - i);
@@ -482,7 +511,7 @@
         function resetData() {
             Swal.fire({
                 title: 'Hapus seluruh data Transaksi?',
-                text: "Semua laporan dan histori dari hari pertama akan hilang permanen!",
+                text: "Semua laporan dari hari pertama akan hilang permanen!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -504,12 +533,12 @@
             if(products.length === 0) return tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada produk.</td></tr>`;
             tbody.innerHTML = products.map(p => `
                 <tr class="hover:bg-gray-50">
-                    <td class="p-2"><img src="${p.img || defaultImg}" class="w-12 h-12 rounded object-cover border"></td>
-                    <td class="p-4 font-bold text-gray-700">${p.name}</td>
-                    <td class="p-4 text-blue-600 font-bold">${formatRp(p.price)}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="openFormProduk(${p.id})" class="text-blue-500 mx-2"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="hapusProduk(${p.id})" class="text-red-500 mx-2"><i class="fa-solid fa-trash"></i></button>
+                    <td class="p-2"><img src="${p.img || defaultImg}" class="w-10 h-10 md:w-12 md:h-12 rounded object-cover border"></td>
+                    <td class="p-3 md:p-4 font-bold text-gray-700">${p.name}</td>
+                    <td class="p-3 md:p-4 text-blue-600 font-bold">${formatRp(p.price)}</td>
+                    <td class="p-3 md:p-4 text-center">
+                        <button onclick="openFormProduk(${p.id})" class="text-blue-500 mx-1 md:mx-2 p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="hapusProduk(${p.id})" class="text-red-500 mx-1 md:mx-2 p-1"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');

@@ -53,7 +53,7 @@
     </aside>
 
     <!-- VIEW DASHBOARD -->
-    <main id="view-dashboard" class="flex-1 flex flex-col h-full overflow-y-auto p-4 md:p-6 transition-all pb-20 md:pb-6">
+    <main id="view-dashboard" class="flex-1 flex flex-col h-full overflow-y-auto p-4 md:p-6 transition-all pb-24 md:pb-6">
         
         <div class="mb-6 flex justify-between items-center bg-white p-4 rounded-2xl shadow-mobile border border-slate-100">
             <div>
@@ -120,45 +120,90 @@
             <button onclick="switchMobileTab('cart')" id="mob-btn-cart" class="flex-1 py-2 text-center text-xs font-bold bg-slate-100 text-slate-500 rounded-xl">Keranjang (<span id="mob-cart-count">0</span>)</button>
         </div>
 
-        <!-- Area Produk LITE -->
-        <div id="section-menu" class="flex-1 overflow-y-auto p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 content-start pb-24 md:pb-6 bg-slate-50">
+        <!-- Area Produk -->
+        <div id="section-menu" class="flex-1 overflow-y-auto p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 content-start pb-28 md:pb-6 bg-slate-50">
             <div id="product-grid" class="contents"></div>
         </div>
 
-        <!-- Area Keranjang LITE -->
-        <div id="section-cart" class="hidden md:flex w-full md:w-80 bg-white flex-col z-10 shrink-0 h-full border-l border-slate-100">
-            <div class="p-4 border-b border-slate-100 flex justify-between items-center shrink-0">
+        <!-- Area Keranjang (Dengan Input Bayar Terintegrasi) -->
+        <div id="section-cart" class="hidden md:flex w-full md:w-[380px] bg-white flex-col z-10 shrink-0 h-full border-l border-slate-100 relative">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center shrink-0 bg-white">
                 <h2 class="text-sm font-black text-slate-900 uppercase">Keranjang</h2>
-                <button onclick="clearCart()" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg">Kosongkan</button>
+                <button onclick="clearCart()" class="text-[10px] font-bold text-red-500 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg transition-colors">Kosongkan</button>
             </div>
-            <div class="flex-1 overflow-y-auto p-3 space-y-2" id="cart-items"></div>
             
-            <div class="p-4 border-t border-slate-100 shrink-0 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.02)] z-20">
-                <div class="flex justify-between items-end mb-3">
-                    <span class="text-xs font-bold text-slate-500">Total Tagihan</span> 
-                    <span id="cart-total" class="text-xl text-primary font-black">Rp0</span>
+            <!-- Area Scroll untuk Item + Pembayaran -->
+            <div class="flex-1 overflow-y-auto bg-slate-50 pb-28 md:pb-6">
+                <!-- Daftar Item -->
+                <div class="p-3 space-y-2" id="cart-items">
+                    <!-- Diisi oleh JS -->
                 </div>
-                <button onclick="openPayment()" class="w-full bg-slate-900 active:scale-95 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-slate-200 transition-transform">
-                    BAYAR SEKARANG
-                </button>
+
+                <!-- Panel Pembayaran (Otomatis muncul jika ada item) -->
+                <div id="payment-panel" class="hidden m-3 bg-white p-4 rounded-2xl shadow-mobile border border-slate-100">
+                    <div class="flex justify-between items-end mb-4 border-b border-slate-100 pb-3">
+                        <span class="text-xs font-bold text-slate-500">Total Tagihan</span>
+                        <span id="cart-total" class="text-2xl text-primary font-black">Rp0</span>
+                    </div>
+
+                    <!-- Pilihan Metode Pembayaran -->
+                    <div class="flex gap-1 mb-4 bg-slate-100 p-1 rounded-xl">
+                        <button onclick="selectPayMethod('tunai')" id="btn-pay-tunai" class="flex-1 py-2 text-[10px] font-bold bg-white shadow-sm rounded-lg text-slate-900 transition-all">TUNAI</button>
+                        <button onclick="selectPayMethod('qris')" id="btn-pay-qris" class="flex-1 py-2 text-[10px] font-bold text-slate-500 rounded-lg transition-all">QRIS</button>
+                        <button onclick="selectPayMethod('transfer')" id="btn-pay-transfer" class="flex-1 py-2 text-[10px] font-bold text-slate-500 rounded-lg transition-all">TRANSFER</button>
+                    </div>
+
+                    <!-- Section Tunai -->
+                    <div id="pay-sec-tunai" class="block space-y-3">
+                        <input type="text" id="input-cash" class="w-full text-xl font-black p-3 border border-slate-200 rounded-xl text-right focus:border-primary outline-none transition-all bg-slate-50" placeholder="Nominal Uang" inputmode="numeric">
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button type="button" onclick="quickCash('pas')" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px] transition-colors">Uang Pas</button>
+                            <button type="button" onclick="quickCash(20000)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px] transition-colors">20K</button>
+                            <button type="button" onclick="quickCash(50000)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px] transition-colors">50K</button>
+                            <button type="button" onclick="quickCash(100000)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px] transition-colors">100K</button>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900 p-3.5 rounded-xl mt-2 shadow-inner">
+                            <span class="font-bold text-slate-400 text-xs">KEMBALIAN</span>
+                            <span class="font-black text-white text-lg" id="pay-change">Rp0</span>
+                        </div>
+                    </div>
+
+                    <!-- Section QRIS -->
+                    <div id="pay-sec-qris" class="hidden text-center py-2">
+                        <img id="display-qris" src="" class="mx-auto h-36 object-contain mb-2 rounded-xl border border-slate-200 bg-slate-50" alt="QRIS">
+                        <p class="text-[10px] font-bold text-slate-500">Minta pelanggan scan QRIS ini</p>
+                    </div>
+
+                    <!-- Section Transfer -->
+                    <div id="pay-sec-transfer" class="hidden text-center py-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 mb-0.5">TRANSFER KE:</p>
+                        <p id="display-bank" class="text-sm font-bold text-slate-900 uppercase"></p>
+                        <p id="display-rek" class="text-xl font-black text-primary tracking-widest my-1"></p>
+                        <p id="display-nama" class="text-[11px] font-semibold text-slate-600 uppercase"></p>
+                    </div>
+
+                    <button onclick="processPayment()" class="w-full bg-primary active:scale-95 text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-primary/30 transition-transform mt-5">
+                        BAYAR SEKARANG
+                    </button>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- VIEW ADMIN (PRODUK & PEMBAYARAN) -->
-    <main id="view-admin" class="flex-1 flex flex-col h-full bg-surface hide transition-all pb-20 md:pb-0">
+    <main id="view-admin" class="flex-1 flex flex-col h-full bg-surface hide transition-all pb-24 md:pb-0">
         
         <!-- Tab Admin -->
         <div class="p-3 bg-white border-b border-slate-100 flex gap-2 overflow-x-auto shrink-0 shadow-sm">
-            <button onclick="switchAdminTab('menu')" id="tab-admin-menu" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap">Menu Produk</button>
-            <button onclick="switchAdminTab('payment')" id="tab-admin-payment" class="px-4 py-2 bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs font-bold rounded-xl whitespace-nowrap transition-colors">Pengaturan Pembayaran</button>
+            <button onclick="switchAdminTab('menu')" id="tab-admin-menu" class="px-4 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap">Menu Produk</button>
+            <button onclick="switchAdminTab('payment')" id="tab-admin-payment" class="px-4 py-2.5 bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs font-bold rounded-xl whitespace-nowrap transition-colors">Pengaturan Pembayaran</button>
         </div>
 
         <!-- Section Menu Produk -->
         <div id="admin-sec-menu" class="flex-1 flex flex-col overflow-hidden">
             <div class="p-4 flex justify-between items-center shrink-0">
                 <h2 class="text-lg font-extrabold text-slate-900">Daftar Menu</h2>
-                <button onclick="openFormProduk()" class="bg-primary text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm">
+                <button onclick="openFormProduk()" class="bg-primary text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm">
                     <i class="fa-solid fa-plus mr-1"></i> Tambah
                 </button>
             </div>
@@ -170,8 +215,8 @@
         <!-- Section Pengaturan Pembayaran -->
         <div id="admin-sec-payment" class="flex-1 overflow-y-auto p-4 hidden">
             <div class="max-w-md bg-white p-5 rounded-2xl shadow-mobile border border-slate-100 space-y-4">
-                <h3 class="font-extrabold text-sm text-slate-900 border-b border-slate-100 pb-3">Informasi QRIS & Rekening Bank</h3>
-                <p class="text-[10px] text-slate-500 leading-relaxed mb-2">Informasi ini akan ditampilkan ke kasir saat pelanggan memilih metode pembayaran QRIS atau Transfer.</p>
+                <h3 class="font-extrabold text-sm text-slate-900 border-b border-slate-100 pb-3">Informasi QRIS & Rekening</h3>
+                <p class="text-[10px] text-slate-500 leading-relaxed mb-2">Informasi ini akan muncul di halaman kasir saat memilih metode QRIS atau Transfer.</p>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 mb-1">LINK FOTO QRIS</label>
                     <input type="url" id="set-qris" placeholder="https://link.com/foto-qris.jpg" class="w-full border border-slate-200 p-2.5 rounded-lg text-xs focus:border-primary outline-none">
@@ -188,129 +233,76 @@
                     <label class="block text-[10px] font-bold text-slate-500 mb-1">ATAS NAMA (NAMA PEMILIK)</label>
                     <input type="text" id="set-nama" placeholder="Nama Pemilik Rekening" class="w-full border border-slate-200 p-2.5 rounded-lg text-xs focus:border-primary outline-none uppercase">
                 </div>
-                <button onclick="savePaymentSettings()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold mt-4 text-xs shadow-md active:scale-95 transition-transform">Simpan Pengaturan</button>
+                <button onclick="savePaymentSettings()" class="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold mt-4 text-xs shadow-md active:scale-95 transition-transform">Simpan Pengaturan</button>
             </div>
         </div>
     </main>
 
     <!-- MOBILE BOTTOM NAVIGATION -->
     <div class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 pb-safe z-40">
-        <div class="flex justify-around items-center p-1">
+        <div class="flex justify-around items-center p-1.5">
             <button onclick="switchMobileNav('dashboard')" id="mob-nav-dashboard" class="flex flex-col items-center p-2 text-primary w-1/3">
-                <i class="fa-solid fa-chart-pie text-lg mb-0.5"></i><span class="text-[9px] font-bold">Dash</span>
+                <i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Dash</span>
             </button>
             <button onclick="switchMobileNav('kasir')" id="mob-nav-kasir" class="flex flex-col items-center p-2 text-slate-400 w-1/3 relative">
                 <div class="relative">
-                    <i class="fa-solid fa-cash-register text-lg mb-0.5"></i>
-                    <span id="mob-cart-badge" class="absolute -top-1 -right-2 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center border border-white scale-0 transition-transform">0</span>
+                    <i class="fa-solid fa-cash-register text-lg mb-1"></i>
+                    <span id="mob-cart-badge" class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white scale-0 transition-transform">0</span>
                 </div>
                 <span class="text-[9px] font-bold">Kasir</span>
             </button>
             <button onclick="switchMobileNav('admin')" id="mob-nav-admin" class="flex flex-col items-center p-2 text-slate-400 w-1/3">
-                <i class="fa-solid fa-sliders text-lg mb-0.5"></i><span class="text-[9px] font-bold">Admin</span>
+                <i class="fa-solid fa-sliders text-lg mb-1"></i><span class="text-[9px] font-bold">Admin</span>
             </button>
         </div>
     </div>
 
     <!-- MODAL EDIT STOK CUP -->
-    <div id="modal-stok" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="modal-stok" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-xs overflow-hidden shadow-2xl">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 class="font-extrabold text-sm text-slate-900">Input Stok Cup Hari Ini</h3>
-                <button onclick="closeModalStok()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModalStok()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-5 space-y-4">
                 <div class="flex justify-between items-center">
                     <label class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-glass-water text-blue-500"></i> Cup Kecil</label>
-                    <input type="number" id="input-stok-kecil" class="w-20 border border-slate-200 p-2 rounded-lg text-center font-bold" min="0">
+                    <input type="number" id="input-stok-kecil" class="w-20 border border-slate-200 p-2.5 rounded-lg text-center font-bold outline-none focus:border-primary" min="0">
                 </div>
                 <div class="flex justify-between items-center">
                     <label class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-glass-water text-orange-500 text-lg"></i> Cup Sedang</label>
-                    <input type="number" id="input-stok-sedang" class="w-20 border border-slate-200 p-2 rounded-lg text-center font-bold" min="0">
+                    <input type="number" id="input-stok-sedang" class="w-20 border border-slate-200 p-2.5 rounded-lg text-center font-bold outline-none focus:border-primary" min="0">
                 </div>
                 <div class="flex justify-between items-center">
                     <label class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-glass-water text-purple-500 text-xl"></i> Cup Besar</label>
-                    <input type="number" id="input-stok-besar" class="w-20 border border-slate-200 p-2 rounded-lg text-center font-bold" min="0">
+                    <input type="number" id="input-stok-besar" class="w-20 border border-slate-200 p-2.5 rounded-lg text-center font-bold outline-none focus:border-primary" min="0">
                 </div>
-                <button onclick="simpanStok()" class="w-full bg-primary text-white py-3 rounded-xl font-bold mt-2">Simpan Stok</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PEMBAYARAN -->
-    <div id="modal-payment" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end md:items-center justify-center p-0 md:p-4 transition-opacity">
-        <div class="bg-white rounded-t-3xl md:rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
-            <div class="p-5 bg-slate-50 border-b border-slate-100 text-center relative shrink-0">
-                <button onclick="closePayment()" class="absolute right-4 top-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
-                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-1">Total Tagihan</p>
-                <h2 class="font-black text-3xl text-primary tracking-tight" id="pay-total-display">Rp0</h2>
-            </div>
-            <div class="p-4 overflow-y-auto">
-                
-                <!-- Pilihan Metode Pembayaran -->
-                <div class="flex gap-2 mb-4 bg-slate-100 p-1 rounded-xl">
-                    <button onclick="selectPayMethod('tunai')" id="btn-pay-tunai" class="flex-1 py-2 text-[10px] font-bold bg-white shadow-sm rounded-lg text-slate-900 transition-all">TUNAI</button>
-                    <button onclick="selectPayMethod('qris')" id="btn-pay-qris" class="flex-1 py-2 text-[10px] font-bold text-slate-500 rounded-lg transition-all">QRIS</button>
-                    <button onclick="selectPayMethod('transfer')" id="btn-pay-transfer" class="flex-1 py-2 text-[10px] font-bold text-slate-500 rounded-lg transition-all">TRANSFER</button>
-                </div>
-
-                <!-- Section Tunai -->
-                <div id="pay-sec-tunai" class="block">
-                    <input type="text" id="input-cash" class="w-full text-2xl font-black p-3 border border-slate-200 rounded-xl text-right focus:border-primary outline-none transition-all mb-3 bg-slate-50" placeholder="0" inputmode="numeric">
-                    <div class="grid grid-cols-4 gap-2 mb-4">
-                        <button type="button" onclick="quickCash('pas')" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-lg text-[10px]">Uang Pas</button>
-                        <button type="button" onclick="quickCash(20000)" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-lg text-[10px]">20K</button>
-                        <button type="button" onclick="quickCash(50000)" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-lg text-[10px]">50K</button>
-                        <button type="button" onclick="quickCash(100000)" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-lg text-[10px]">100K</button>
-                    </div>
-                    <div class="flex justify-between items-center bg-slate-900 p-4 rounded-xl mb-4">
-                        <span class="font-bold text-slate-400 text-xs">KEMBALIAN</span>
-                        <span class="font-black text-white text-xl" id="pay-change">Rp0</span>
-                    </div>
-                </div>
-
-                <!-- Section QRIS -->
-                <div id="pay-sec-qris" class="hidden text-center py-2 mb-4">
-                    <img id="display-qris" src="" class="mx-auto h-40 object-contain mb-3 rounded-xl border border-slate-200 bg-slate-50" alt="QRIS">
-                    <p class="text-[10px] font-bold text-slate-500">Minta pelanggan scan barcode di atas.</p>
-                </div>
-
-                <!-- Section Transfer -->
-                <div id="pay-sec-transfer" class="hidden text-center py-4 bg-slate-50 rounded-xl border border-slate-100 mb-4">
-                    <p class="text-[10px] font-bold text-slate-400 mb-1">SILAKAN TRANSFER KE:</p>
-                    <p id="display-bank" class="text-sm font-bold text-slate-900 uppercase"></p>
-                    <p id="display-rek" class="text-2xl font-black text-primary tracking-widest my-1"></p>
-                    <p id="display-nama" class="text-xs font-semibold text-slate-600 uppercase"></p>
-                </div>
-
-                <button onclick="processPayment()" class="w-full bg-primary active:scale-[0.98] text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/30 transition-transform">
-                    SELESAIKAN TRANSAKSI
-                </button>
+                <button onclick="simpanStok()" class="w-full bg-primary text-white py-3.5 rounded-xl font-bold mt-2 shadow-md">Simpan Stok</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL FORM PRODUK -->
-    <div id="modal-produk" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="modal-produk" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
             <div class="p-5 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                 <h3 class="font-bold text-sm text-slate-900" id="modal-produk-title">Tambah Menu</h3>
-                <button onclick="closeFormProduk()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeFormProduk()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="simpanProduk(event)" class="p-5 space-y-3">
                 <input type="hidden" id="form-id">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 mb-1">NAMA MINUMAN</label>
-                    <input type="text" id="form-nama" required class="w-full border border-slate-200 p-2.5 rounded-lg text-sm font-semibold focus:border-primary outline-none">
+                    <input type="text" id="form-nama" required class="w-full border border-slate-200 p-3 rounded-xl text-sm font-semibold focus:border-primary outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 mb-1">HARGA (Rp)</label>
-                        <input type="text" id="form-harga" required class="w-full border border-slate-200 p-2.5 rounded-lg text-sm font-bold focus:border-primary outline-none" inputmode="numeric">
+                        <input type="text" id="form-harga" required class="w-full border border-slate-200 p-3 rounded-xl text-sm font-bold focus:border-primary outline-none" inputmode="numeric">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 mb-1">UKURAN CUP</label>
-                        <select id="form-cup" required class="w-full border border-slate-200 p-2.5 rounded-lg text-sm font-semibold focus:border-primary outline-none bg-white">
+                        <select id="form-cup" required class="w-full border border-slate-200 p-3 rounded-xl text-sm font-semibold focus:border-primary outline-none bg-white">
                             <option value="sedang">Sedang (M)</option>
                             <option value="kecil">Kecil (S)</option>
                             <option value="besar">Besar (L)</option>
@@ -320,9 +312,9 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 mb-1">URL FOTO (OPSIONAL)</label>
-                    <input type="url" id="form-foto" class="w-full border border-slate-200 p-2.5 rounded-lg text-xs focus:border-primary outline-none">
+                    <input type="url" id="form-foto" class="w-full border border-slate-200 p-3 rounded-xl text-xs focus:border-primary outline-none">
                 </div>
-                <button type="submit" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold mt-2 text-sm shadow-md">Simpan Menu</button>
+                <button type="submit" class="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold mt-3 text-sm shadow-md">Simpan Menu</button>
             </form>
         </div>
     </div>
@@ -425,7 +417,6 @@
             document.getElementById('stock-sedang').innerText = cupStock.sedang;
             document.getElementById('stock-besar').innerText = cupStock.besar;
         }
-
         function openModalStok() {
             document.getElementById('input-stok-kecil').value = cupStock.kecil;
             document.getElementById('input-stok-sedang').value = cupStock.sedang;
@@ -452,11 +443,11 @@
                 if(p.cup === 'sedang') badge = '<span class="absolute top-2 right-2 bg-orange-100 text-orange-600 text-[9px] px-1.5 py-0.5 rounded font-bold border border-orange-200">M</span>';
                 if(p.cup === 'besar') badge = '<span class="absolute top-2 right-2 bg-purple-100 text-purple-600 text-[9px] px-1.5 py-0.5 rounded font-bold border border-purple-200">L</span>';
                 return `
-                <div onclick="addToCart(${p.id})" class="bg-white rounded-2xl shadow-mobile border border-slate-100 overflow-hidden cursor-pointer active:scale-95 transition-transform relative flex flex-col h-40">
+                <div onclick="addToCart(${p.id})" class="bg-white rounded-2xl shadow-mobile border border-slate-100 overflow-hidden cursor-pointer active:scale-95 transition-transform relative flex flex-col h-44">
                     ${badge}
-                    <img src="${p.img || defaultImg}" class="h-20 w-full object-cover">
-                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                        <h3 class="font-bold text-slate-800 text-[11px] leading-tight line-clamp-2">${p.name}</h3>
+                    <img src="${p.img || defaultImg}" class="h-24 w-full object-cover">
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <h3 class="font-bold text-slate-800 text-xs leading-tight line-clamp-2">${p.name}</h3>
                         <p class="text-primary font-black text-xs">${formatRp(p.price)}</p>
                     </div>
                 </div>`
@@ -468,6 +459,14 @@
             const existing = cart.find(c => c.id === id);
             if(existing) existing.qty++; else cart.push({ ...product, qty: 1 });
             updateCart();
+            
+            // Auto scroll ke bawah (ke panel pembayaran) jika di mobile agar intuitif
+            if(window.innerWidth < 768 && cart.length === 1) {
+                setTimeout(() => {
+                    const scrollContainer = document.querySelector('#section-cart .overflow-y-auto');
+                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                }, 100);
+            }
         }
 
         function updateCart() {
@@ -476,39 +475,42 @@
             document.getElementById('mob-cart-count').innerText = totalItems;
             if(totalItems > 0) { badge.classList.remove('scale-0'); badge.classList.add('scale-100'); } else { badge.classList.add('scale-0'); }
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            document.getElementById('cart-total').innerText = formatRp(total);
-            document.getElementById('cart-items').innerHTML = cart.length === 0 ? 
-                '<div class="text-center text-slate-400 mt-10 text-[10px]">Keranjang kosong</div>' : 
-                cart.map((item, idx) => `
-                <div class="bg-slate-50 rounded-xl p-2.5 flex justify-between items-center border border-slate-100">
-                    <div class="w-3/5 pr-1">
-                        <div class="font-bold text-[11px] text-slate-800 line-clamp-1">${item.name}</div>
-                        <div class="text-primary text-[10px] font-black mt-0.5">${formatRp(item.price)}</div>
+            paymentTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('cart-total').innerText = formatRp(paymentTotal);
+
+            const cartItemsEl = document.getElementById('cart-items');
+            const paymentPanel = document.getElementById('payment-panel');
+
+            if(cart.length === 0) {
+                cartItemsEl.innerHTML = '<div class="text-center text-slate-400 mt-10 text-[10px]">Keranjang kosong</div>';
+                paymentPanel.classList.add('hidden'); // Sembunyikan pembayaran jika kosong
+            } else {
+                paymentPanel.classList.remove('hidden'); // Munculkan fitur bayar
+                cartItemsEl.innerHTML = cart.map((item, idx) => `
+                <div class="bg-white rounded-xl p-3 flex justify-between items-center border border-slate-100 shadow-sm">
+                    <div class="w-3/5 pr-2">
+                        <div class="font-bold text-xs text-slate-800 line-clamp-1">${item.name}</div>
+                        <div class="text-primary text-[11px] font-black mt-0.5">${formatRp(item.price)}</div>
                     </div>
-                    <div class="flex items-center bg-white rounded-lg p-0.5 border border-slate-200 shadow-sm">
-                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, -1)" class="w-6 h-6 flex items-center justify-center font-black text-slate-600">-</button>
-                        <span class="text-xs font-bold w-5 text-center">${item.qty}</span>
-                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, 1)" class="w-6 h-6 flex items-center justify-center font-black text-slate-600">+</button>
+                    <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-100">
+                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center font-black text-slate-600 bg-white shadow-sm rounded">-</button>
+                        <span class="text-xs font-bold w-6 text-center">${item.qty}</span>
+                        <button type="button" onclick="event.stopPropagation(); changeQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center font-black text-slate-600 bg-white shadow-sm rounded">+</button>
                     </div>
                 </div>
-            `).join('');
+                `).join('');
+                
+                // Update tampilan kembalian
+                let currentVal = parseInt(cashInput.value.replace(/[^0-9]/g, '')) || 0;
+                updateChangeDisplay(currentVal);
+            }
         }
 
         function changeQty(idx, delta) { cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx, 1); updateCart(); }
-        function clearCart() { if(cart.length === 0) return; cart = []; updateCart(); }
+        function clearCart() { if(cart.length === 0) return; cart = []; updateCart(); cashInput.value = ''; updateChangeDisplay(0); }
 
-        // PEMBAYARAN CERDAS 
+        // LOGIKA PEMBAYARAN DI DALAM KERANJANG
         const cashInput = document.getElementById('input-cash');
-
-        function openPayment() {
-            if(!cart.length) return Swal.fire({icon:'error', text:'Keranjang masih kosong', timer: 1000, showConfirmButton: false});
-            paymentTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            document.getElementById('pay-total-display').innerText = formatRp(paymentTotal);
-            selectPayMethod('tunai'); // Reset ke tunai default
-            document.getElementById('modal-payment').classList.remove('hidden');
-        }
-        function closePayment() { document.getElementById('modal-payment').classList.add('hidden'); }
 
         function selectPayMethod(method) {
             currentPayMethod = method;
@@ -526,7 +528,7 @@
             document.getElementById(`pay-sec-${method}`).classList.remove('hidden');
 
             if(method === 'tunai') {
-                cashInput.value = ''; updateChangeDisplay(0);
+                // Focus ke input jika user ganti ke tunai
                 setTimeout(() => cashInput.focus(), 100);
             } else if (method === 'qris') {
                 document.getElementById('display-qris').src = paySettings.qris || 'https://via.placeholder.com/200?text=QRIS+Belum+Diatur';
@@ -552,7 +554,7 @@
         function updateChangeDisplay(cash) {
             const change = cash - paymentTotal;
             const changeElem = document.getElementById('pay-change');
-            if(change >= 0 || cash === 0) { changeElem.innerText = formatRp(change >= 0 ? change : 0); changeElem.className = 'font-black text-white text-xl'; } 
+            if(change >= 0 || cash === 0) { changeElem.innerText = formatRp(change >= 0 ? change : 0); changeElem.className = 'font-black text-white text-lg'; } 
             else { changeElem.innerText = '-' + formatRp(Math.abs(change)); changeElem.className = 'font-black text-red-400 text-lg'; }
         }
 
@@ -563,10 +565,10 @@
                 if(cash < paymentTotal) return Swal.fire({icon: 'error', title: 'Uang Kurang', text: 'Uang tunai pelanggan belum mencukupi!'});
                 change = cash - paymentTotal;
             } else {
-                cash = paymentTotal; // QRIS / Transfer dianggap uang pas
+                cash = paymentTotal; // QRIS / Transfer otomatis lunas
             }
             
-            // Potong Stok Cup
+            // Potong Stok Cup otomatis
             cart.forEach(item => {
                 if(item.cup === 'kecil' && cupStock.kecil > 0) cupStock.kecil -= item.qty;
                 if(item.cup === 'sedang' && cupStock.sedang > 0) cupStock.sedang -= item.qty;
@@ -585,12 +587,15 @@
 
             historyTrx.push(data); localStorage.setItem('pos_history', JSON.stringify(historyTrx));
             
-            cart = []; updateCart(); closePayment();
+            // Reset keranjang (otomatis sembunyikan panel bayar)
+            cart = []; updateCart(); cashInput.value = ''; updateChangeDisplay(0); selectPayMethod('tunai');
+            
+            // Balik ke tab menu jika di HP
             if(window.innerWidth < 768) switchMobileTab('menu');
             if(!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
             
-            let htmlMsg = currentPayMethod === 'tunai' ? `Kembalian: <b>${formatRp(change)}</b>` : `Metode: <b>${currentPayMethod.toUpperCase()}</b>`;
-            Swal.fire({icon: 'success', title: 'Transaksi Berhasil', html: htmlMsg, confirmButtonColor: '#10b981'});
+            let htmlMsg = currentPayMethod === 'tunai' ? `Kembalian: <br><span style="font-size: 24px; font-weight: 900; color:#10b981;">${formatRp(change)}</span>` : `Metode:<br><span style="font-size: 20px; font-weight: 900;">${currentPayMethod.toUpperCase()} BERHASIL</span>`;
+            Swal.fire({icon: 'success', title: 'Transaksi Sukses', html: htmlMsg, confirmButtonColor: '#10b981'});
         }
 
         // ================= DASHBOARD =================
@@ -611,7 +616,7 @@
 
             const recent = [...trxFiltered].reverse(); 
             document.getElementById('recent-trx-list').innerHTML = recent.length ? recent.map(t => {
-                let badgeColor = t.method === 'tunai' ? 'text-slate-500 bg-slate-100' : 'text-blue-600 bg-blue-50 border-blue-200';
+                let badgeColor = t.method === 'tunai' ? 'text-slate-500 bg-slate-100 border-slate-200' : 'text-primary bg-emerald-50 border-emerald-200';
                 let methodName = (t.method || 'tunai').toUpperCase();
                 return `
                 <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl flex justify-between items-center">
@@ -624,7 +629,7 @@
                     </div>
                     <div class="text-right"><span class="font-black text-primary text-xs">${formatRp(t.total)}</span></div>
                 </div>`
-            }).join('') : '<div class="text-center p-6 text-slate-400 text-xs">Kosong</div>';
+            }).join('') : '<div class="text-center p-6 text-slate-400 text-xs">Belum ada transaksi</div>';
             renderChart(targetDate);
         }
 
@@ -655,13 +660,13 @@
             const secPay = document.getElementById('admin-sec-payment');
 
             if(tab === 'menu') {
-                btnMenu.className = "px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap";
-                btnPay.className = "px-4 py-2 bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs font-bold rounded-xl whitespace-nowrap transition-colors";
+                btnMenu.className = "px-4 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap";
+                btnPay.className = "px-4 py-2.5 bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs font-bold rounded-xl whitespace-nowrap transition-colors";
                 secMenu.classList.remove('hidden'); secMenu.classList.add('flex');
                 secPay.classList.add('hidden');
             } else {
-                btnPay.className = "px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap";
-                btnMenu.className = "px-4 py-2 bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs font-bold rounded-xl whitespace-nowrap transition-colors";
+                btnPay.className = "px-4 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap";
+                btnMenu.className = "px-4 py-2.5 bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs font-bold rounded-xl whitespace-nowrap transition-colors";
                 secPay.classList.remove('hidden'); secPay.classList.add('block');
                 secMenu.classList.add('hidden'); secMenu.classList.remove('flex');
             }

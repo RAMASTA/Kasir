@@ -3,65 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Kasir Sederhana</title>
+    <title>POS Kasir Profesional</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; }
-        .input-group { margin-bottom: 15px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f8f9fa; }
-        .summary { margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 4px; }
+        :root {
+            --primary: #4776E6;
+            --secondary: #8E54E9;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-card: #ffffff;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            /* Gradient background yang tidak membosankan namun tetap soft */
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background-attachment: fixed;
+            margin: 0;
+            padding: 2vh 2vw;
+            color: var(--text-dark);
+            min-height: 96vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header dengan gradient profesional */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(71, 118, 230, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            box-sizing: border-box;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--secondary);
+            outline: none;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(142, 84, 233, 0.1);
+        }
+
+        /* Tabel Modern */
+        .table-container {
+            max-height: 350px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-light);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 15px;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Summary Area & Buttons */
+        .summary-box {
+            background: linear-gradient(135deg, #fdfbfb 0%, #f4f7f6 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .summary-row.total h3 {
+            font-size: 22px;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(71, 118, 230, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(71, 118, 230, 0.4);
+        }
+
+        button.btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: none;
+            margin-bottom: 15px;
+        }
+
+        button.btn-outline:hover {
+            background: rgba(71, 118, 230, 0.05);
+            transform: translateY(0);
+        }
+
+        .laporan-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .laporan-list li {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .laporan-list li:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Aplikasi Kasir (POS)</h1>
-        
-        <div class="input-group">
-            <label>Scan Barcode (Coba ketik: <strong>111</strong>, <strong>222</strong>, atau <strong>333</strong>) lalu tekan Enter pada keyboard:</label>
-            <input type="text" id="barcodeInput" placeholder="Scan atau ketik barcode..." onkeypress="handleScan(event)">
-        </div>
 
-        <h2>Keranjang Belanja</h2>
-        <table id="cartTable">
-            <thead>
-                <tr>
-                    <th>Nama Barang</th>
-                    <th>Harga</th>
-                    <th>Qty</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody id="cartBody">
-                <!-- Item akan muncul di sini -->
-            </tbody>
-        </table>
+    <header class="app-header">
+        <h1>POS Kasir Smart</h1>
+        <div id="clock">12:00:00</div>
+    </header>
 
-        <div class="summary">
-            <h3>Total Belanja: Rp <span id="totalBelanja">0</span></h3>
-            <div class="input-group">
-                <label>Uang Pelanggan (Rp):</label>
-                <input type="number" id="uangPelanggan" placeholder="Masukkan jumlah uang..." oninput="hitungKembalian()">
+    <div class="layout-grid">
+        <!-- Panel Kiri: Input & Laporan -->
+        <div class="left-panel">
+            <div class="card" style="margin-bottom: 24px;">
+                <h2>Scan Barang</h2>
+                <div class="input-group">
+                    <label>Masukkan Barcode (Contoh: 111, 222, 333) lalu tekan Enter</label>
+                    <input type="text" id="barcodeInput" placeholder="Scan barcode di sini..." onkeypress="handleScan(event)" autofocus>
+                </div>
             </div>
-            <h3>Kembalian: Rp <span id="kembalian">0</span></h3>
-            <button onclick="simpanTransaksi()">Simpan Transaksi</button>
+
+            <div class="card">
+                <h2>Laporan Pendapatan Bulan Ini</h2>
+                <button class="btn-outline" onclick="hitungPendapatan()">Hitung Total Pendapatan</button>
+                <div class="summary-row" style="margin-top: 15px;">
+                    <span style="font-weight: 600;">Total:</span>
+                    <h3 style="margin: 0; color: #059669;">Rp <span id="totalPendapatan">0</span></h3>
+                </div>
+                <ul class="laporan-list" id="listTransaksi">
+                    <!-- List transaksi muncul di sini -->
+                </ul>
+            </div>
         </div>
 
-        <hr style="margin: 30px 0;">
+        <!-- Panel Kanan: Keranjang & Checkout -->
+        <div class="right-panel">
+            <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+                <h2>Keranjang Belanja</h2>
+                
+                <div class="table-container">
+                    <table id="cartTable">
+                        <thead>
+                            <tr>
+                                <th>Barang</th>
+                                <th>Harga</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #a0aec0;">Keranjang kosong</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <h2>Laporan Pendapatan Bulan Ini</h2>
-        <button onclick="hitungPendapatan()">Hitung Pendapatan (Sistem Looping)</button>
-        <h3 style="color: #28a745;">Total Pendapatan: Rp <span id="totalPendapatan">0</span></h3>
-        <ul id="listTransaksi"></ul>
+                <div class="summary-box" style="margin-top: auto;">
+                    <div class="summary-row total">
+                        <span>Total Bayar</span>
+                        <h3>Rp <span id="totalBelanja">0</span></h3>
+                    </div>
+                    
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label>Uang Diterima (Rp)</label>
+                        <input type="number" id="uangPelanggan" placeholder="0" oninput="hitungKembalian()">
+                    </div>
+
+                    <div class="summary-row">
+                        <span style="font-weight: 600; color: var(--text-light);">Kembalian</span>
+                        <h3 style="margin: 0; font-size: 20px;" id="kembalianText">Rp 0</h3>
+                    </div>
+
+                    <button onclick="simpanTransaksi()" style="margin-top: 10px;">Proses Pembayaran</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Simulasi Database Barang (Pengganti Backend)
+        // Jam Digital Header
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
+        }, 1000);
+
+        // Simulasi Database
         const databaseBarang = [
             { barcode: '111', nama: 'Kopi Kapal Api', harga: 5000 },
             { barcode: '222', nama: 'Roti Sari Roti', harga: 12000 },
@@ -69,14 +316,15 @@
         ];
 
         let keranjang = [];
-        
-        // Simulasi Database Transaksi (Berisi data awal untuk contoh looping)
         let riwayatTransaksi = [
-            { id: 1, total: 25000, tanggal: '2026-11-01' },
-            { id: 2, total: 15000, tanggal: '2026-11-05' }
+            { id: 'TRX-001', total: 25000, tanggal: '2026-11-01' },
+            { id: 'TRX-002', total: 15000, tanggal: '2026-11-05' }
         ];
 
-        // Fitur 1: Scan Barcode
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID').format(angka);
+        }
+
         function handleScan(event) {
             if (event.key === 'Enter') {
                 let barcode = document.getElementById('barcodeInput').value;
@@ -93,13 +341,20 @@
                 } else {
                     alert('Barang tidak ditemukan di sistem!');
                 }
-                document.getElementById('barcodeInput').value = ''; // Reset input
+                document.getElementById('barcodeInput').value = '';
             }
         }
 
-        // Fitur 2: Hitung Total
         function updateTabelKeranjang() {
             let tbody = document.getElementById('cartBody');
+            
+            if (keranjang.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #a0aec0;">Keranjang kosong</td></tr>';
+                document.getElementById('totalBelanja').innerText = '0';
+                hitungKembalian();
+                return;
+            }
+
             tbody.innerHTML = '';
             let total = 0;
 
@@ -109,36 +364,38 @@
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.nama}</td>
-                        <td>${item.harga}</td>
+                        <td>${formatRupiah(item.harga)}</td>
                         <td>${item.qty}</td>
-                        <td>${subtotal}</td>
+                        <td style="font-weight: 600;">${formatRupiah(subtotal)}</td>
                     </tr>
                 `;
             });
 
-            document.getElementById('totalBelanja').innerText = total;
-            hitungKembalian(); // Update otomatis saat keranjang berubah
+            // Simpan nilai asli di dataset untuk kalkulasi mudah, tampilkan format rupiah di layar
+            let elemenTotal = document.getElementById('totalBelanja');
+            elemenTotal.innerText = formatRupiah(total);
+            elemenTotal.dataset.value = total; 
+            
+            hitungKembalian();
         }
 
-        // Fitur 3: Hitung Kembalian Pelanggan
         function hitungKembalian() {
-            let total = parseInt(document.getElementById('totalBelanja').innerText) || 0;
+            let total = parseInt(document.getElementById('totalBelanja').dataset.value) || 0;
             let uang = parseInt(document.getElementById('uangPelanggan').value) || 0;
             let kembalian = uang - total;
             
-            let elemenKembalian = document.getElementById('kembalian');
+            let elemenKembalian = document.getElementById('kembalianText');
             if (uang > 0 && kembalian < 0) {
                 elemenKembalian.innerText = "Uang Kurang!";
-                elemenKembalian.style.color = "red";
+                elemenKembalian.style.color = "#ef4444"; // Merah
             } else {
-                elemenKembalian.innerText = kembalian;
-                elemenKembalian.style.color = "black";
+                elemenKembalian.innerText = "Rp " + formatRupiah(kembalian > 0 ? kembalian : 0);
+                elemenKembalian.style.color = "#2d3748"; // Default
             }
         }
 
-        // Fitur 4: Simpan Transaksi
         function simpanTransaksi() {
-            let total = parseInt(document.getElementById('totalBelanja').innerText) || 0;
+            let total = parseInt(document.getElementById('totalBelanja').dataset.value) || 0;
             let uang = parseInt(document.getElementById('uangPelanggan').value) || 0;
 
             if (keranjang.length === 0) {
@@ -146,36 +403,53 @@
                 return;
             }
             if (uang < total) {
-                alert('Transaksi gagal: Uang pelanggan kurang!');
+                alert('Transaksi gagal: Uang pelanggan kurang dari total belanja!');
                 return;
             }
 
+            // Simpan ke riwayat (looping target)
             riwayatTransaksi.push({
-                id: riwayatTransaksi.length + 1,
+                id: 'TRX-' + String(riwayatTransaksi.length + 1).padStart(3, '0'),
                 total: total,
                 tanggal: new Date().toISOString().split('T')[0]
             });
 
-            alert('Transaksi Berhasil Disimpan!');
+            // Reset UI
+            alert('Pembayaran Berhasil Disimpan!');
             keranjang = [];
             document.getElementById('uangPelanggan').value = '';
+            document.getElementById('kembalianText').innerText = 'Rp 0';
             updateTabelKeranjang();
+            
+            // Auto update laporan jika sedang dilihat
+            if (document.getElementById('totalPendapatan').innerText !== '0') {
+                hitungPendapatan();
+            }
         }
 
-        // Fitur 5: Hitung Pendapatan dengan Looping
         function hitungPendapatan() {
             let totalPendapatan = 0;
             let listHtml = '';
             
-            // Logika Looping Array untuk menjumlahkan semua transaksi
+            // Sistem Looping Data
             for (let i = 0; i < riwayatTransaksi.length; i++) {
                 totalPendapatan += riwayatTransaksi[i].total;
-                listHtml += `<li>Transaksi #${riwayatTransaksi[i].id} - Rp ${riwayatTransaksi[i].total} (${riwayatTransaksi[i].tanggal})</li>`;
+                listHtml += `
+                    <li>
+                        <div>
+                            <strong>${riwayatTransaksi[i].id}</strong>
+                            <div style="font-size: 12px; color: #718096;">${riwayatTransaksi[i].tanggal}</div>
+                        </div>
+                        <span class="badge">Rp ${formatRupiah(riwayatTransaksi[i].total)}</span>
+                    </li>
+                `;
             }
 
-            document.getElementById('totalPendapatan').innerText = totalPendapatan;
+            document.getElementById('totalPendapatan').innerText = formatRupiah(totalPendapatan);
             document.getElementById('listTransaksi').innerHTML = listHtml;
         }
     </script>
 </body>
 </html>
+index.html
+Menampilkan index.html.

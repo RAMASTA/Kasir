@@ -3,453 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS Kasir Profesional</title>
+    <title>MAGGOTTRACK - Manajemen Budidaya BSF</title>
+    
+    <!-- Fonts, Icons, and Charts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --primary: #4776E6;
-            --secondary: #8E54E9;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --bg-card: #ffffff;
-            --border-radius: 16px;
+            --primary-dark: #14532d; /* Hijau Tua */
+            --primary-lime: #84cc16; /* Lime Modern */
+            --bg-color: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --border: #e2e8f0;
         }
 
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            /* Gradient background yang tidak membosankan namun tetap soft */
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            background-attachment: fixed;
-            margin: 0;
-            padding: 2vh 2vw;
-            color: var(--text-dark);
-            min-height: 96vh;
-            display: flex;
-            flex-direction: column;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); }
 
-        /* Header dengan gradient profesional */
-        .app-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 20px 30px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(71, 118, 230, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        /* Utilities */
+        h1, h2, h3 { color: var(--primary-dark); }
+        .text-center { text-align: center; }
+        .d-flex { display: flex; }
+        .justify-between { justify-content: space-between; align-items: center; }
+        .mt-4 { margin-top: 1rem; }
+        .hidden { display: none !important; }
 
-        .app-header h1 {
-            margin: 0;
-            font-size: 24px;
-            letter-spacing: 0.5px;
-        }
+        /* Buttons & Form */
+        .btn { padding: 0.6rem 1.2rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-primary { background: var(--primary-dark); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-lime); color: var(--primary-dark); }
+        .btn-icon { background: none; border: none; cursor: pointer; }
+        .text-danger { color: #ef4444; }
+        
+        .form-control { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; outline: none; margin-top: 0.25rem; }
+        .form-control:focus { border-color: var(--primary-lime); box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2); }
+        .form-group { margin-bottom: 1rem; text-align: left; }
 
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 24px;
-            flex: 1;
-        }
+        /* Layout */
+        .app-container { display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 260px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border); text-align: center; }
+        .sidebar-header h2 { font-weight: 800; }
+        .sidebar-header span { color: var(--primary-lime); }
+        .sidebar-nav { padding: 1rem 0; flex: 1; }
+        .nav-item { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-weight: 500; gap: 12px; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { background: #f0fdf4; color: var(--primary-dark); border-left-color: var(--primary-lime); }
+        .nav-item svg { width: 20px; height: 20px; }
 
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
-            border: 1px solid rgba(255,255,255,0.8);
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-color); }
+        .topbar { background: var(--white); height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+        .topbar-search { display: flex; align-items: center; background: var(--bg-color); padding: 0.5rem 1rem; border-radius: 20px; }
+        .topbar-search input { border: none; background: transparent; outline: none; margin-left: 8px; width: 200px; }
+        .topbar-actions { display: flex; align-items: center; gap: 1rem; }
+        .user-profile { display: flex; align-items: center; gap: 10px; font-weight: 500; border-left: 1px solid var(--border); padding-left: 1rem; }
+        .avatar { width: 35px; height: 35px; background: var(--primary-lime); color: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        h2 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: var(--text-dark);
-            border-bottom: 2px solid #f0f2f5;
-            padding-bottom: 10px;
-        }
+        .page-content { padding: 2rem; overflow-y: auto; flex: 1; }
+        .page-header { margin-bottom: 2rem; }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
+        /* Dashboard Cards */
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .stat-icon { width: 60px; height: 60px; background: #f0fdf4; color: var(--primary-lime); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .stat-icon svg { width: 30px; height: 30px; }
+        .stat-info h3 { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .stat-info p { font-size: 24px; font-weight: 700; color: var(--primary-dark); }
+        .stat-info p span { font-size: 14px; font-weight: 400; color: var(--text-muted); }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-light);
-        }
+        /* Tables */
+        .card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 2rem;}
+        .table { width: 100%; border-collapse: collapse; text-align: left; }
+        .table th { padding: 1rem; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 14px; }
+        .table td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-secondary { background: #e2e8f0; color: #475569; }
+        .empty-state { padding: 3rem; text-align: center; color: var(--text-muted); font-style: italic; }
 
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 12px 16px;
-            box-sizing: border-box;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background-color: #f8fafc;
-        }
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--white); padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; }
+        .close { cursor: pointer; font-size: 24px; font-weight: bold; color: var(--text-muted); }
 
-        input[type="text"]:focus, input[type="number"]:focus {
-            border-color: var(--secondary);
-            outline: none;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(142, 84, 233, 0.1);
-        }
-
-        /* Tabel Modern */
-        .table-container {
-            max-height: 350px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background-color: #f8fafc;
-            color: var(--text-light);
-            font-weight: 600;
-            text-align: left;
-            padding: 12px 16px;
-            font-size: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        td {
-            padding: 12px 16px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 15px;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Summary Area & Buttons */
-        .summary-box {
-            background: linear-gradient(135deg, #fdfbfb 0%, #f4f7f6 100%);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .summary-row.total h3 {
-            font-size: 22px;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        button {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(71, 118, 230, 0.3);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(71, 118, 230, 0.4);
-        }
-
-        button.btn-outline {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            box-shadow: none;
-            margin-bottom: 15px;
-        }
-
-        button.btn-outline:hover {
-            background: rgba(71, 118, 230, 0.05);
-            transform: translateY(0);
-        }
-
-        .laporan-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .laporan-list li {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .laporan-list li:last-child {
-            border-bottom: none;
-        }
-
-        .badge {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* Responsiveness */
-        @media (max-width: 768px) {
-            .layout-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        .chart-container { height: 350px; position: relative; }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <h1>POS Kasir Smart</h1>
-        <div id="clock">12:00:00</div>
-    </header>
-
-    <div class="layout-grid">
-        <!-- Panel Kiri: Input & Laporan -->
-        <div class="left-panel">
-            <div class="card" style="margin-bottom: 24px;">
-                <h2>Scan Barang</h2>
-                <div class="input-group">
-                    <label>Masukkan Barcode (Contoh: 111, 222, 333) lalu tekan Enter</label>
-                    <input type="text" id="barcodeInput" placeholder="Scan barcode di sini..." onkeypress="handleScan(event)" autofocus>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Laporan Pendapatan Bulan Ini</h2>
-                <button class="btn-outline" onclick="hitungPendapatan()">Hitung Total Pendapatan</button>
-                <div class="summary-row" style="margin-top: 15px;">
-                    <span style="font-weight: 600;">Total:</span>
-                    <h3 style="margin: 0; color: #059669;">Rp <span id="totalPendapatan">0</span></h3>
-                </div>
-                <ul class="laporan-list" id="listTransaksi">
-                    <!-- List transaksi muncul di sini -->
-                </ul>
-            </div>
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>MAGGOT<span>TRACK</span></h2>
         </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" onclick="switchPage('dashboard', this)"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+            <a class="nav-item" onclick="switchPage('batches', this)"><i data-lucide="layers"></i> Data Batch</a>
+        </nav>
+    </aside>
 
-        <!-- Panel Kanan: Keranjang & Checkout -->
-        <div class="right-panel">
-            <div class="card" style="height: 100%; display: flex; flex-direction: column;">
-                <h2>Keranjang Belanja</h2>
-                
-                <div class="table-container">
-                    <table id="cartTable">
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-search">
+                <i data-lucide="search"></i>
+                <input type="text" placeholder="Cari data...">
+            </div>
+            <div class="topbar-actions">
+                <i data-lucide="bell" style="color: var(--text-muted); cursor:pointer;"></i>
+                <div class="user-profile">
+                    <div class="avatar"><i data-lucide="user"></i></div>
+                    <span>Admin Farm</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            
+            <!-- PAGE: DASHBOARD -->
+            <div id="page-dashboard">
+                <div class="page-header">
+                    <h1>Dashboard Overview</h1>
+                    <p>Pantau perkembangan budidaya maggot Anda hari ini.</p>
+                </div>
+
+                <div class="grid-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="layers"></i></div>
+                        <div class="stat-info">
+                            <h3>Batch Aktif</h3>
+                            <p id="stat-active">0 <span>Batch</span></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="wheat"></i></div>
+                        <div class="stat-info">
+                            <h3>Populasi Total (Est)</h3>
+                            <p id="stat-pop">0 <span>Gram</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Grafik Pertumbuhan Populasi (Simulasi)</h3>
+                    <div class="chart-container mt-4">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: DATA BATCH -->
+            <div id="page-batches" class="hidden">
+                <div class="page-header d-flex justify-between">
+                    <div>
+                        <h1>Manajemen Data Batch</h1>
+                        <p>Kelola siklus budidaya maggot Anda.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="toggleModal('addModal', true)">
+                        <i data-lucide="plus"></i> Tambah Batch
+                    </button>
+                </div>
+
+                <div class="card">
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>Barang</th>
-                                <th>Harga</th>
-                                <th>Qty</th>
-                                <th>Subtotal</th>
+                                <th>ID</th>
+                                <th>Nama Batch</th>
+                                <th>Tgl Telur</th>
+                                <th>Populasi Awal (gr)</th>
+                                <th>Target Panen</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="cartBody">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: #a0aec0;">Keranjang kosong</td>
-                            </tr>
+                        <tbody id="batch-table-body">
+                            <!-- Data render here -->
                         </tbody>
                     </table>
                 </div>
-
-                <div class="summary-box" style="margin-top: auto;">
-                    <div class="summary-row total">
-                        <span>Total Bayar</span>
-                        <h3>Rp <span id="totalBelanja">0</span></h3>
-                    </div>
-                    
-                    <div class="input-group" style="margin-bottom: 10px;">
-                        <label>Uang Diterima (Rp)</label>
-                        <input type="number" id="uangPelanggan" placeholder="0" oninput="hitungKembalian()">
-                    </div>
-
-                    <div class="summary-row">
-                        <span style="font-weight: 600; color: var(--text-light);">Kembalian</span>
-                        <h3 style="margin: 0; font-size: 20px;" id="kembalianText">Rp 0</h3>
-                    </div>
-
-                    <button onclick="simpanTransaksi()" style="margin-top: 10px;">Proses Pembayaran</button>
-                </div>
             </div>
+
         </div>
+    </main>
+</div>
+
+<!-- Modal Tambah Batch -->
+<div id="addModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="d-flex justify-between">
+            <h2>Tambah Batch Baru</h2>
+            <span class="close" onclick="toggleModal('addModal', false)">&times;</span>
+        </div>
+        <form id="formAddBatch" class="mt-4">
+            <div class="form-group">
+                <label>Nama Batch</label>
+                <input type="text" id="batchName" required class="form-control" placeholder="Contoh: Batch Rack A1">
+            </div>
+            <div class="form-group">
+                <label>Tanggal Masuk Telur</label>
+                <input type="date" id="dateEgg" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Estimasi Telur/Pre-pupa (Gram)</label>
+                <input type="number" id="initPop" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Target Tanggal Panen</label>
+                <input type="date" id="targetDate" required class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Simpan Data</button>
+        </form>
     </div>
+</div>
 
-    <script>
-        // Jam Digital Header
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
-        }, 1000);
+<script>
+    // Initialize Icons
+    lucide.createIcons();
 
-        // Simulasi Database
-        const databaseBarang = [
-            { barcode: '111', nama: 'Kopi Kapal Api', harga: 5000 },
-            { barcode: '222', nama: 'Roti Sari Roti', harga: 12000 },
-            { barcode: '333', nama: 'Susu Indomilk', harga: 6000 }
-        ];
+    // Data State (Menggunakan LocalStorage pengganti Database MySQL)
+    let batches = JSON.parse(localStorage.getItem('maggotBatches')) || [];
+    let myChart = null;
 
-        let keranjang = [];
-        let riwayatTransaksi = [
-            { id: 'TRX-001', total: 25000, tanggal: '2026-11-01' },
-            { id: 'TRX-002', total: 15000, tanggal: '2026-11-05' }
-        ];
+    // Fungsi Navigasi SPA (Single Page Application)
+    function switchPage(pageId, element) {
+        document.getElementById('page-dashboard').classList.add('hidden');
+        document.getElementById('page-batches').classList.add('hidden');
+        document.getElementById('page-' + pageId).classList.remove('hidden');
 
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID').format(angka);
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        if(pageId === 'dashboard') updateDashboard();
+    }
+
+    function toggleModal(modalId, show) {
+        const modal = document.getElementById(modalId);
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+    }
+
+    // Fungsi Format Tanggal
+    function formatDate(dateStr) {
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        return new Date(dateStr).toLocaleDateString('id-ID', options);
+    }
+
+    // CRUD: Render Tabel Batch
+    function renderTable() {
+        const tbody = document.getElementById('batch-table-body');
+        tbody.innerHTML = '';
+
+        if (batches.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Belum ada data batch. Mulai tambahkan batch pertama Anda!</td></tr>';
+            return;
         }
 
-        function handleScan(event) {
-            if (event.key === 'Enter') {
-                let barcode = document.getElementById('barcodeInput').value;
-                let barang = databaseBarang.find(b => b.barcode === barcode);
-                
-                if (barang) {
-                    let itemDiKeranjang = keranjang.find(k => k.barcode === barcode);
-                    if (itemDiKeranjang) {
-                        itemDiKeranjang.qty += 1;
-                    } else {
-                        keranjang.push({ ...barang, qty: 1 });
-                    }
-                    updateTabelKeranjang();
-                } else {
-                    alert('Barang tidak ditemukan di sistem!');
-                }
-                document.getElementById('barcodeInput').value = '';
-            }
+        batches.forEach((b, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#B-${b.id}</td>
+                <td><strong>${b.name}</strong></td>
+                <td>${formatDate(b.dateEgg)}</td>
+                <td>${parseInt(b.pop).toLocaleString('id-ID')} gr</td>
+                <td>${formatDate(b.targetDate)}</td>
+                <td><span class="badge badge-success">ACTIVE</span></td>
+                <td>
+                    <button class="btn-icon text-danger" onclick="deleteBatch(${index})" title="Hapus">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        lucide.createIcons();
+    }
+
+    // CRUD: Tambah Batch
+    document.getElementById('formAddBatch').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newBatch = {
+            id: Date.now().toString().slice(-4), // Generate Random 4 Digit ID
+            name: document.getElementById('batchName').value,
+            dateEgg: document.getElementById('dateEgg').value,
+            pop: document.getElementById('initPop').value,
+            targetDate: document.getElementById('targetDate').value
+        };
+
+        batches.push(newBatch);
+        localStorage.setItem('maggotBatches', JSON.stringify(batches)); // Simpan ke browser
+        
+        this.reset();
+        toggleModal('addModal', false);
+        renderTable();
+        updateDashboard();
+    });
+
+    // CRUD: Hapus Batch
+    function deleteBatch(index) {
+        if (confirm('Yakin ingin menghapus batch ini?')) {
+            batches.splice(index, 1);
+            localStorage.setItem('maggotBatches', JSON.stringify(batches));
+            renderTable();
+            updateDashboard();
         }
+    }
 
-        function updateTabelKeranjang() {
-            let tbody = document.getElementById('cartBody');
-            
-            if (keranjang.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #a0aec0;">Keranjang kosong</td></tr>';
-                document.getElementById('totalBelanja').innerText = '0';
-                hitungKembalian();
-                return;
-            }
+    // Render Dashboard & Grafik
+    function updateDashboard() {
+        // Update Angka
+        document.getElementById('stat-active').innerHTML = `${batches.length} <span>Batch</span>`;
+        const totalPop = batches.reduce((sum, b) => sum + parseInt(b.pop), 0);
+        document.getElementById('stat-pop').innerHTML = `${totalPop.toLocaleString('id-ID')} <span>Gram</span>`;
 
-            tbody.innerHTML = '';
-            let total = 0;
+        // Render Grafik Chart.js
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        if (myChart) myChart.destroy(); // Hapus grafik lama sebelum render baru
 
-            keranjang.forEach(item => {
-                let subtotal = item.harga * item.qty;
-                total += subtotal;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.nama}</td>
-                        <td>${formatRupiah(item.harga)}</td>
-                        <td>${item.qty}</td>
-                        <td style="font-weight: 600;">${formatRupiah(subtotal)}</td>
-                    </tr>
-                `;
-            });
+        // Data dummy dinamis berdasarkan populasi awal
+        const baseData = totalPop > 0 ? totalPop : 50; 
+        
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
+                datasets: [{
+                    label: 'Estimasi Pertumbuhan Biomasa (Kg)',
+                    data: [baseData * 0.1, baseData * 0.5, baseData * 1.5, baseData * 3],
+                    borderColor: '#84cc16',
+                    backgroundColor: 'rgba(132, 204, 22, 0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
 
-            // Simpan nilai asli di dataset untuk kalkulasi mudah, tampilkan format rupiah di layar
-            let elemenTotal = document.getElementById('totalBelanja');
-            elemenTotal.innerText = formatRupiah(total);
-            elemenTotal.dataset.value = total; 
-            
-            hitungKembalian();
-        }
+    // Inisialisasi awal saat web dibuka
+    renderTable();
+    updateDashboard();
 
-        function hitungKembalian() {
-            let total = parseInt(document.getElementById('totalBelanja').dataset.value) || 0;
-            let uang = parseInt(document.getElementById('uangPelanggan').value) || 0;
-            let kembalian = uang - total;
-            
-            let elemenKembalian = document.getElementById('kembalianText');
-            if (uang > 0 && kembalian < 0) {
-                elemenKembalian.innerText = "Uang Kurang!";
-                elemenKembalian.style.color = "#ef4444"; // Merah
-            } else {
-                elemenKembalian.innerText = "Rp " + formatRupiah(kembalian > 0 ? kembalian : 0);
-                elemenKembalian.style.color = "#2d3748"; // Default
-            }
-        }
-
-        function simpanTransaksi() {
-            let total = parseInt(document.getElementById('totalBelanja').dataset.value) || 0;
-            let uang = parseInt(document.getElementById('uangPelanggan').value) || 0;
-
-            if (keranjang.length === 0) {
-                alert('Keranjang masih kosong!');
-                return;
-            }
-            if (uang < total) {
-                alert('Transaksi gagal: Uang pelanggan kurang dari total belanja!');
-                return;
-            }
-
-            // Simpan ke riwayat (looping target)
-            riwayatTransaksi.push({
-                id: 'TRX-' + String(riwayatTransaksi.length + 1).padStart(3, '0'),
-                total: total,
-                tanggal: new Date().toISOString().split('T')[0]
-            });
-
-            // Reset UI
-            alert('Pembayaran Berhasil Disimpan!');
-            keranjang = [];
-            document.getElementById('uangPelanggan').value = '';
-            document.getElementById('kembalianText').innerText = 'Rp 0';
-            updateTabelKeranjang();
-            
-            // Auto update laporan jika sedang dilihat
-            if (document.getElementById('totalPendapatan').innerText !== '0') {
-                hitungPendapatan();
-            }
-        }
-
-        function hitungPendapatan() {
-            let totalPendapatan = 0;
-            let listHtml = '';
-            
-            // Sistem Looping Data
-            for (let i = 0; i < riwayatTransaksi.length; i++) {
-                totalPendapatan += riwayatTransaksi[i].total;
-                listHtml += `
-                    <li>
-                        <div>
-                            <strong>${riwayatTransaksi[i].id}</strong>
-                            <div style="font-size: 12px; color: #718096;">${riwayatTransaksi[i].tanggal}</div>
-                        </div>
-                        <span class="badge">Rp ${formatRupiah(riwayatTransaksi[i].total)}</span>
-                    </li>
-                `;
-            }
-
-            document.getElementById('totalPendapatan').innerText = formatRupiah(totalPendapatan);
-            document.getElementById('listTransaksi').innerHTML = listHtml;
-        }
-    </script>
+</script>
 </body>
 </html>
-index.html
-Menampilkan index.html.
